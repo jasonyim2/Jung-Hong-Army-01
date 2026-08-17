@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>카드뉴스 기획안 미리보기 — army-pr360 템플릿</title>
+<!--
+  ============================================================
+  army-pr360 자산파일 : 카드뉴스 HTML 템플릿
+  ------------------------------------------------------------
+  용도 : 모드 ③(기획)이 생성한 기획안을 눈으로 확인하는 미리보기.
+  원칙 : 디자인을 다듬지 않는다. 배점에 영향이 없다.
+        치환 자리표시자 {{...}} 만 채우면 된다.
+
+  ★ 이것은 "완성 디자인"이 아니라 "사람이 검수할 기획안"이다.
+  ★ 상용 서비스·외부 CDN·외부 폰트를 쓰지 않는다.
+  ★ 실제 학교명·부대명·실명을 넣지 않는다. (합성 명칭만)
+  ============================================================
+
+  치환 자리표시자 목록
+  {{대상기관}}     예) 한빛대학교
+  {{대상학과}}     예) 기계공학과
+  {{행사유형}}     예) 학과설명회
+  {{병과1}} {{병과2}}
+  {{헤드카피}}
+  {{서브카피}}
+  {{소구1}} {{소구2}} {{소구3}}
+  {{일시장소}}
+  {{출처문서}} {{기준일}}
+  {{생성상태}}     "사전 생성 결과" 또는 "실시간 생성"
+-->
+<style>
+  :root{ --navy:#1F3864; --olive:#6B7A3A; --bg:#F5F6F2; --line:#D9DCD2; --ink:#22252A; --warn:#A8452F; }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","맑은 고딕",sans-serif;
+    display:flex; justify-content:center; padding:28px 16px;}
+  .deck{width:100%; max-width:420px;}
+
+  /* 안전 표시 띠 — 지우지 않는다 (시연규칙.md 1절) */
+  .safety{background:#fff; border:1.5px solid var(--olive); border-radius:8px;
+    padding:10px 14px; margin-bottom:16px; font-size:12px; line-height:1.7; color:#3A4050;}
+  .safety b{color:var(--navy);}
+  .safety .row{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+  .safety .row span{border:1px solid var(--line); border-radius:20px; padding:2px 9px; background:#FAFBF7;}
+
+  .card{background:#fff; border:1px solid var(--line); border-radius:10px;
+    margin-bottom:14px; overflow:hidden;}
+  .card .bar{height:6px; background:var(--navy);}
+  .card .inner{padding:22px 24px;}
+  .idx{font-size:11px; letter-spacing:2px; color:var(--olive); font-weight:800; margin-bottom:8px;}
+
+  /* 1면 — 표지 */
+  .cover{background:linear-gradient(160deg,#1F3864,#3C5C96); color:#fff;}
+  .cover .inner{padding:44px 24px 40px;}
+  .cover .to{font-size:13px; color:#C8D3E6; margin-bottom:10px;}
+  .cover h1{font-size:28px; margin:0 0 12px; line-height:1.35; letter-spacing:-0.5px;}
+  .cover .sub{font-size:15px; color:#DDE4F0; margin:0;}
+  .cover .rule{height:3px; width:56px; background:#8A9B52; margin:18px 0 14px;}
+  .cover .type{font-size:12px; color:#B9C6DE;}
+
+  /* 2면 — 소구 포인트 */
+  h2{font-size:19px; color:var(--navy); margin:0 0 14px;}
+  ul.pt{list-style:none; padding:0; margin:0;}
+  ul.pt li{position:relative; padding-left:34px; margin:14px 0; font-size:15.5px; line-height:1.65;}
+  ul.pt li .n{position:absolute; left:0; top:2px; width:24px; height:24px; border-radius:50%;
+    background:var(--olive); color:#fff; font-size:12px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;}
+
+  /* 3면 — 병과 */
+  .jobs{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+  .jobs span{border:1.5px solid var(--navy); color:var(--navy); font-weight:700;
+    border-radius:6px; padding:8px 16px; font-size:15px; background:#EAEEF5;}
+  .hint{font-size:12.5px; color:#5A6070; margin-top:12px;}
+
+  /* 4면 — 안내 */
+  .info{font-size:15px; line-height:1.8;}
+  .info b{color:var(--navy);}
+
+  /* 출처 */
+  .src{background:#fff; border:1px dashed var(--line); border-radius:8px;
+    padding:12px 14px; font-size:12px; color:#5A6070; line-height:1.7;}
+  .src b{color:var(--warn);}
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ===== 안전 표시 (시연규칙.md 안전 배지 6종) ===== -->
+  <div class="safety">
+    <b>기획안 초안 · 검토 후 사용</b>
+    <div class="row">
+      <span>① 합성 데이터</span>
+      <span>② {{생성상태}}</span>
+      <span>③ 출처·기준일 표기</span>
+      <span>⑤ 초안 · 검토 후 사용</span>
+      <span>⑥ 실제 발송 기능 없음</span>
+    </div>
+  </div>
+
+  <!-- ===== 1면 : 표지 ===== -->
+  <div class="card cover">
+    <div class="bar" style="background:#8A9B52"></div>
+    <div class="inner">
+      <div class="to">{{대상기관}} {{대상학과}}</div>
+      <h1>{{헤드카피}}</h1>
+      <div class="rule"></div>
+      <p class="sub">{{서브카피}}</p>
+      <div class="type" style="margin-top:16px">{{행사유형}}</div>
+    </div>
+  </div>
+
+  <!-- ===== 2면 : 소구 포인트 3 ===== -->
+  <div class="card">
+    <div class="bar"></div>
+    <div class="inner">
+      <div class="idx">POINT</div>
+      <h2>이 학과 학생에게 특히 맞는 이유</h2>
+      <ul class="pt">
+        <li><span class="n">1</span>{{소구1}}</li>
+        <li><span class="n">2</span>{{소구2}}</li>
+        <li><span class="n">3</span>{{소구3}}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== 3면 : 연계 병과 ===== -->
+  <div class="card">
+    <div class="bar" style="background:var(--olive)"></div>
+    <div class="inner">
+      <div class="idx">BRANCH</div>
+      <h2>전공과 이어지는 병과</h2>
+      <div class="jobs">
+        <span>{{병과1}}</span>
+        <span>{{병과2}}</span>
+      </div>
+      <p class="hint">※ 전공 기반 <b>참고 제시</b>이며 실제 병과 분류는 선발 절차에 따릅니다.</p>
+    </div>
+  </div>
+
+  <!-- ===== 4면 : 안내 ===== -->
+  <div class="card">
+    <div class="bar"></div>
+    <div class="inner">
+      <div class="idx">INFO</div>
+      <h2>안내</h2>
+      <p class="info">
+        <b>행사</b> {{행사유형}}<br>
+        <b>일시·장소</b> {{일시장소}}<br>
+        <b>대상</b> {{대상기관}} {{대상학과}}
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== 출처 ===== -->
+  <div class="src">
+    ※ 인용 : 「{{출처문서}}」 (기준일 {{기준일}}) · 검토 상태 : <b>초안</b><br>
+    ※ 본 자료의 모든 데이터는 실존 인물·기관과 무관하게 만든 <b>합성 데이터</b>입니다.<br>
+    ※ 확인되지 않은 사실은 <b>[확인 필요]</b>로 표기되며, 대외 사용 전 담당자 검토가 필요합니다.
+  </div>
+
+</div>
+</body>
+</html>

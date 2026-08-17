@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>육군 모집홍보 PR360 Lite — 현장 기록·분석·기획 데모</title>
+<!--
+  ==========================================================================
+  Army_PR360_Lite.html
+  육군 모집홍보 360도 지원 시스템 (경진대회 시연용 오프라인 단일 HTML 앱)
+  
+  [최종 확정 디자인 테마]
+  - 배경/카드: 올리브 슬레이트 (#192120, #232D2C, #161E1D)
+  - 본문/라벨: W2 소프트 아이보리 (#E8E6E3, #B0ADA6)
+  - 주요 타이틀/헤딩: T1 샴페인 골드 (#DECDB3) — 눈부심 완전 배제
+  - 강조/배지: 올리브/세이지 (#7C8F45, #94A956)
+  - 보관된 대체 옵션: 스틸 네이비 (#182232) + W4 뮤트 펄그레이 (#DCDFE4)
+  ==========================================================================
+-->
+<style>
+  :root {
+    --bg: #192120;
+    --card-bg: #232D2C;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-inner-bg: #1C2524;
+    --input-bg: #161E1D;
+    --input-border: #33413F;
+    
+    --navy: #1F3864;
+    --navy-light: #2A4D8A;
+    --navy-accent: #3B66A8;
+    
+    --olive: #7C8F45;
+    --olive-light: #94A956;
+    --olive-dim: rgba(124, 143, 69, 0.18);
+    
+    /* 눈부심 없는 샴페인 골드 타이틀 & 소프트 아이보리 본문 */
+    --title-color: #DECDB3;
+    --ink: #E8E6E3;
+    --ink-muted: #B0ADA6;
+    --ink-dim: #7A7873;
+    
+    --warn: #D9534F;
+    --warn-bg: rgba(217, 83, 79, 0.12);
+    --warn-border: #D9534F;
+    
+    --success: #5CB85C;
+    --success-bg: rgba(92, 184, 92, 0.12);
+    
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    line-height: 1.65;
+    font-size: 16px;
+    padding: 32px 20px 80px;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 980px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  /* ==================== 상단 헤더 & 진행 바 ==================== */
+  .top-header {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+  }
+
+  .header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .app-title-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .app-badge-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--olive);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .app-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--title-color);
+    letter-spacing: -0.5px;
+  }
+
+  .app-subtitle {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+
+  .recalc-toggle-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-inner-bg);
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid var(--input-border);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+
+  /* 스위치 */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #33413F; transition: .25s; border-radius: 22px;
+  }
+  .slider:before {
+    position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+    background-color: #fff; transition: .25s; border-radius: 50%;
+  }
+  input:checked + .slider { background-color: var(--olive); }
+  input:checked + .slider:before { transform: translateX(20px); }
+
+  /* 4대 주기 도식 네비게이션 */
+  .workflow-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .wf-step {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .wf-step:hover {
+    border-color: var(--olive);
+    color: var(--title-color);
+  }
+
+  .wf-step.active {
+    background: var(--olive-dim);
+    color: var(--title-color);
+    border-color: var(--olive);
+  }
+
+  .wf-step.done {
+    border-color: var(--navy-accent);
+    color: var(--ink);
+  }
+
+  .wf-num {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  .wf-step.active .wf-num {
+    background: var(--olive);
+    color: #fff;
+  }
+
+  /* 안전 표시 6종 상태 띠 */
+  .safety-bar {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .safety-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+
+  .safety-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .safety-tag {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .safety-tag.primary {
+    border-color: var(--olive);
+    background: var(--olive-dim);
+    color: var(--olive-light);
+  }
+  .safety-tag.status-badge {
+    border-color: var(--navy-accent);
+    color: #ADC8ED;
+    background: rgba(42, 77, 138, 0.25);
+  }
+
+  .disclaimer-text {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    padding-top: 8px;
+  }
+
+  /* ==================== 메인 카드 공통 스타일 ==================== */
+  .card-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 32px 32px 36px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-tag {
+    background: var(--olive);
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--title-color);
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+
+  /* ==================== 버튼 스타일 (주요 / 보조) ==================== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  
+  /* 주요 버튼 (가장 강하게 강조) */
+  .btn-primary {
+    background: var(--olive);
+    color: #ffffff;
+  }
+  .btn-primary:hover {
+    background: var(--olive-light);
+    transform: translateY(-1px);
+  }
+
+  /* 보조 버튼 (차분한 아웃라인/고스트) */
+  .btn-secondary {
+    background: var(--card-inner-bg);
+    color: var(--ink-muted);
+    border: 1px solid var(--input-border);
+  }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink);
+    border-color: var(--ink-dim);
+  }
+
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 13.5px;
+    border-radius: 6px;
+  }
+
+  .btn-highlight-parse {
+    border-color: var(--olive-light) !important;
+    color: var(--title-color) !important;
+    background: var(--olive-dim) !important;
+  }
+
+  /* ==================== [카드 1] 현장 기록 폼 ==================== */
+  .record-input-box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+
+  .textarea-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .textarea-label-row label {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--title-color);
+  }
+
+  .prompt-textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 15.5px;
+    font-family: inherit;
+    line-height: 1.6;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .prompt-textarea:focus {
+    border-color: var(--olive);
+  }
+
+  .btn-actions-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  /* 폼 서브 그룹 박스 */
+  .form-subgroup {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+
+  .subgroup-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--olive-light);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-group label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .form-group label .req {
+    color: var(--warn);
+    font-weight: 900;
+  }
+  .form-group label .est-badge {
+    background: var(--olive-dim);
+    color: var(--olive-light);
+    border: 1px solid var(--olive);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .form-control {
+    padding: 11px 13px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    background: var(--bg);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+    outline: none;
+    transition: all 0.2s;
+  }
+  .form-control:focus {
+    border-color: var(--olive);
+  }
+  .form-control.missing {
+    border-color: var(--warn) !important;
+    background: var(--warn-bg) !important;
+  }
+
+  /* 누락 안내 알림창 */
+  .validation-alert {
+    display: none;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    color: #FFA49E;
+    font-weight: 600;
+  }
+
+  /* 결과보고 3문장 박스 */
+  .report-box {
+    margin-top: 20px;
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .report-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--title-color);
+    margin-bottom: 8px;
+  }
+  .report-line {
+    font-size: 14.5px;
+    color: var(--ink-muted);
+    line-height: 1.7;
+    position: relative;
+    padding-left: 16px;
+    margin: 6px 0;
+  }
+  .report-line:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--olive-light);
+    font-weight: 900;
+  }
+
+  /* 접을 수 있는 상세 데이터 (JSON) */
+  .collapsible-box {
+    margin-top: 18px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .collapsible-header {
+    background: var(--card-inner-bg);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .collapsible-header:hover {
+    color: var(--ink-muted);
+  }
+  .collapsible-content {
+    display: none;
+    padding: 14px 16px;
+    background: #111716;
+    font-family: monospace;
+    font-size: 12.5px;
+    color: #BAC2B8;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    border-top: 1px solid var(--card-border);
+  }
+
+  /* ==================== [카드 2] 대시보드 ==================== */
+  .dash-subgroup {
+    margin-bottom: 28px;
+  }
+  .dash-subgroup-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--title-color);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* 펀널 수평 흐름 */
+  .funnel-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .funnel-card {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .fn-step-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--olive-light);
+    margin-bottom: 4px;
+  }
+  .fn-step-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .fn-step-count {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--title-color);
+    margin-bottom: 8px;
+  }
+  .fn-step-conv {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(124, 143, 69, 0.15);
+    color: var(--olive-light);
+    border: 1px solid rgba(124, 143, 69, 0.3);
+  }
+
+  .dropoff-box {
+    margin-top: 12px;
+    background: rgba(217, 83, 79, 0.08);
+    border: 1px solid rgba(217, 83, 79, 0.3);
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 13.5px;
+    color: #FFA49E;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* KPI 4개 */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .kpi-item {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .kpi-item-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .kpi-item-value {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--title-color);
+    letter-spacing: -0.5px;
+  }
+  .kpi-item-sub {
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+
+  /* 효율 상위/하위 2열 */
+  .eff-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .eff-box {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .eff-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .eff-title.top { color: var(--success); }
+  .eff-title.bottom { color: #E57373; }
+
+  .eff-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .eff-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    padding: 7px 10px;
+    background: var(--bg);
+    border-radius: 6px;
+  }
+  .eff-name { font-weight: 700; color: var(--ink); }
+  .eff-stat { font-size: 12.5px; color: var(--ink-dim); }
+  .eff-rate { font-weight: 800; color: var(--title-color); }
+
+  /* 추천 카드 목록 */
+  .recomm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .recomm-card {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .recomm-card.rank-1 {
+    border-color: var(--olive);
+    background: linear-gradient(180deg, #1F2B2A 0%, var(--card-inner-bg) 100%);
+  }
+
+  .recomm-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .recomm-badges {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rank-badge {
+    background: var(--olive);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .rule-badge {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink-muted);
+    border: 1px solid var(--card-border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .recomm-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-decision {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--input-border);
+    background: var(--bg);
+    color: var(--ink-muted);
+    transition: all 0.2s;
+  }
+  .btn-decision:hover { border-color: var(--ink-muted); color: var(--ink); }
+  
+  .btn-decision.accept.active {
+    background: var(--olive);
+    color: #fff;
+    border-color: var(--olive);
+  }
+  .btn-decision.reject.active {
+    background: var(--warn);
+    color: #fff;
+    border-color: var(--warn);
+  }
+
+  .recomm-action-text {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--title-color);
+    line-height: 1.5;
+  }
+
+  .recomm-reason-text {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    background: var(--bg);
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 3px solid var(--olive);
+  }
+  .recomm-reason-text b { color: var(--ink); }
+
+  /* ==================== [카드 3] 기획안 ==================== */
+  .planning-trigger-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-inner-bg);
+    border: 1px solid var(--olive);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .planning-trigger-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .planning-target-lead {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--title-color);
+  }
+  .planning-target-sub {
+    font-size: 13.5px;
+    color: var(--olive-light);
+    font-weight: 600;
+  }
+
+  .plan-specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .plan-spec-card {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .plan-spec-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--title-color);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .spec-item-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .spec-item {
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--card-border);
+  }
+  .spec-item b { color: var(--title-color); }
+
+  /* 카드뉴스 4면 미리보기 템플릿 임베드 */
+  .cardnews-preview-wrapper {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 28px 20px;
+  }
+
+  .deck-preview {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .cn-card {
+    background: #fff;
+    border: 1px solid #D9DCD2;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    color: #22252A;
+  }
+  .cn-card .bar { height: 6px; background: var(--navy); }
+  .cn-card .inner { padding: 22px 24px; }
+  .cn-idx { font-size: 11px; letter-spacing: 2px; color: var(--olive); font-weight: 800; margin-bottom: 8px; }
+
+  .cn-cover { background: linear-gradient(160deg, #1F3864, #3C5C96); color: #fff; }
+  .cn-cover .inner { padding: 40px 24px 36px; }
+  .cn-cover .to { font-size: 13.5px; color: #C8D3E6; margin-bottom: 8px; }
+  .cn-cover h1 { font-size: 24px; margin: 0 0 10px; line-height: 1.35; letter-spacing: -0.5px; color:#fff; }
+  .cn-cover .sub { font-size: 14.5px; color: #DDE4F0; margin: 0; line-height: 1.5; }
+  .cn-cover .rule { height: 3px; width: 48px; background: #8A9B52; margin: 16px 0 12px; }
+  .cn-cover .type { font-size: 12.5px; color: #B9C6DE; }
+
+  .cn-pt { list-style: none; padding: 0; margin: 0; }
+  .cn-pt li { position: relative; padding-left: 34px; margin: 14px 0; font-size: 14.5px; line-height: 1.6; color:#22252A; }
+  .cn-pt li .n {
+    position: absolute; left: 0; top: 2px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--olive); color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .cn-jobs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .cn-jobs span {
+    border: 1.5px solid var(--navy); color: var(--navy); font-weight: 700;
+    border-radius: 6px; padding: 6px 14px; font-size: 14.5px; background: #EAEEF5;
+  }
+  .cn-hint { font-size: 12.5px; color: #5A6070; margin-top: 10px; }
+
+  .cn-info { font-size: 14.5px; line-height: 1.8; color:#22252A; }
+  .cn-info b { color: var(--navy); }
+
+  .cn-src {
+    background: #fff; border: 1px dashed #D9DCD2; border-radius: 8px;
+    padding: 12px 16px; font-size: 12px; color: #5A6070; line-height: 1.7;
+    margin-top: 12px;
+  }
+  .cn-src b { color: var(--warn); }
+
+  /* ==================== [부속 ④] 후속 메일 초안 ==================== */
+  .mail-draft-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+  }
+  .mail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .mail-title-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mail-warn-tag {
+    background: var(--warn-bg);
+    color: #FFA49E;
+    border: 1px solid rgba(217, 83, 79, 0.4);
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .mail-subject-options {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .subject-pill {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .subject-pill b { color: var(--olive-light); }
+
+  .mail-body-content {
+    background: var(--card-inner-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 20px 22px;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink);
+    white-space: pre-line;
+  }
+
+  .mail-footer-note {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ==================== 반응형 스타일 ==================== */
+  @media (max-width: 768px) {
+    .workflow-bar { grid-template-columns: repeat(2, 1fr); }
+    .funnel-row { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .eff-grid { grid-template-columns: 1fr; }
+    .form-grid-2col { grid-template-columns: 1fr; }
+    .plan-specs-grid { grid-template-columns: 1fr; }
+    .card-section { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ==================== 상단 헤더 & 진행 바 ==================== -->
+  <header class="top-header">
+    <div class="header-main">
+      <div class="app-title-box">
+        <div class="app-badge-icon">360</div>
+        <div>
+          <h1 class="app-title">육군 모집홍보 PR360 Lite</h1>
+          <div class="app-subtitle">현장 기록 → 정량 분석·추천 → 기획안 생성 → 후속 연락 4단계 의사결정 체계</div>
+        </div>
+      </div>
+      <div class="recalc-toggle-box">
+        <span>로컬 규칙 재계산</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleRecalc" onchange="onToggleRecalc(this)">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 4대 주기 도식 네비게이션 -->
+    <div class="workflow-bar">
+      <div class="wf-step active" id="wfStep1" onclick="scrollToSection('card1')" title="카드 1로 이동"><span class="wf-num">1</span> [카드 1] ① 현장 기록</div>
+      <div class="wf-step" id="wfStep2" onclick="scrollToSection('card2')" title="카드 2로 이동"><span class="wf-num">2</span> [카드 2] ② 분석 및 추천</div>
+      <div class="wf-step" id="wfStep3" onclick="scrollToSection('card3')" title="카드 3으로 이동"><span class="wf-num">3</span> [카드 3] ③ 기획안 작성</div>
+      <div class="wf-step" id="wfStep4" onclick="scrollToSection('card4')" title="후속 메일로 이동"><span class="wf-num">4</span> [부속 ④] ④ 후속 메일 초안</div>
+    </div>
+
+    <!-- 안전 표시 7종 상태 띠 -->
+    <div class="safety-bar">
+      <div class="safety-header">
+        <span>안전 표시 7종 및 시연 상태 (시연규칙.md 준수)</span>
+        <span class="safety-tag primary">기준일: 2026-08-16</span>
+      </div>
+      <div class="safety-grid">
+        <span class="safety-tag">① 합성 데이터</span>
+        <span class="safety-tag status-badge" id="badgeGenStatus">② 사전 생성 결과</span>
+        <span class="safety-tag">③ 출처: 2026 육군 모집안내 (2026-08-01)</span>
+        <span class="safety-tag">④ 추천 근거 지표·표본 수 필수 병기</span>
+        <span class="safety-tag">⑤ 초안 · 검토 후 사용</span>
+        <span class="safety-tag">⑥ 실제 발송 기능 없음</span>
+        <span class="safety-tag">⑦ 앱은 음성을 녹음·저장·전송하지 않음</span>
+      </div>
+      <div class="disclaimer-text">
+        ※ 본 자료의 모든 데이터는 실존 인물·기관과 무관하게 만든 <b>합성 데이터</b>이며, 실제 운영 시 개인 식별정보는 수집하지 않고 집계값만 저장합니다.
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== [카드 1] 현장 기록 ==================== -->
+  <section class="card-section" id="card1">
+    <div class="section-header">
+      <div>
+        <div class="section-title-group">
+          <span class="section-tag">[카드 1] 모드 ①</span>
+          <h2 class="section-title">현장 활동 기록 및 표준화</h2>
+        </div>
+        <div class="section-desc">현장 활동 메모를 입력하면 코드표 기반으로 표준 레코드를 자동 파싱 및 추출합니다.</div>
+      </div>
+    </div>
+
+    <div class="record-input-box">
+      <div class="textarea-label-row">
+        <label for="memoInput">자연어 활동 메모</label>
+        <span style="font-size:13px; color:var(--ink-muted);">필수 6항목 자동 추출</span>
+      </div>
+      <textarea id="memoInput" class="prompt-textarea" oninput="onMemoInputChange()" placeholder="활동 메모를 입력하세요 (예: 2026-08-16 한빛대학교에서 부스 운영, 상담 23명, 관심 9명, 지원 의향 3명, 포스터 150장 배포. 기계공학과 심화설명회와 공병 문의가 많았음.)"></textarea>
+      
+      <div class="btn-actions-row">
+        <button class="btn btn-secondary btn-sm" onclick="startVoiceMemo()">🎤 말로 입력하기</button>
+        <button class="btn btn-secondary btn-sm" onclick="loadDefaultExample()">예시 불러오기 (한빛대)</button>
+        <button class="btn btn-secondary btn-sm" onclick="loadIncompleteExample()">보조 예시 (필수 누락 테스트)</button>
+        <button class="btn btn-secondary btn-sm" id="btnParseNatural" onclick="parseNaturalLanguage()">자연어 파싱</button>
+        <button class="btn btn-secondary btn-sm" onclick="rebuildMemoFromForm()">메모를 폼 내용으로 다시 만들기</button>
+        <button class="btn btn-primary" onclick="saveRecord()">기록 저장 (대시보드 즉시 반영)</button>
+      </div>
+
+      <!-- 음성 입력 안내 상자 (OS별 분기) -->
+      <div id="voiceGuideBox" style="display:none; margin-top:12px; background:var(--card-inner-bg); border:1px solid var(--input-border); border-radius:8px; padding:14px 18px; color:var(--ink);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+          <div style="font-size:14px; line-height:1.7;">
+            <div id="voiceGuideText" style="font-weight:700; color:var(--title-color);"></div>
+            <div style="font-size:13px; color:var(--ink-muted); margin-top:4px;">
+              말이 끝나면 아래 <b>[자연어 파싱]</b>을 누르세요. · 합성 데이터만 말씀하세요 (실제 이름·전화번호 금지).
+            </div>
+            <div style="font-size:12px; color:var(--ink-dim); margin-top:6px; border-top:1px dashed var(--card-border); padding-top:6px;">
+              ※ 앱은 음성을 녹음·저장·전송하지 않습니다.
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="closeVoiceGuide()" style="padding:4px 10px; font-size:12px;">닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 누락 경고창 -->
+    <div id="validationAlert" class="validation-alert">
+      ⚠ 필수 6항목 중 누락된 항목이 있습니다. 붉게 표시된 필드를 확인 후 입력해 주세요.
+    </div>
+
+    <!-- 소그룹화된 표준 입력 폼 -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:800; color:var(--title-color);">표준 활동 레코드 (저장 전 수정 가능)</span>
+      <span id="recordStatusTag" style="font-size:13px; color:var(--olive-light); font-weight:700;">대기 중</span>
+    </div>
+
+    <!-- 그룹 1: 기본 정보 -->
+    <div class="form-subgroup">
+      <div class="subgroup-title">1. 기본 정보</div>
+      <div class="form-grid-2col">
+        <div class="form-group">
+          <label>활동일자 <span class="req">*</span> <span id="f_date_est" class="est-badge" style="display:none;">추정</span></label>
+          <input type="text" id="f_date" class="form-control" value="2026-08-16" oninput="onFormFieldChange()" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="form-group">
+          <label>팀 <span class="req">*</span> <span id="f_team_est" class="est-badge" style="display:none;">추정</span></label>
+          <input type="text" id="f_team" class="form-control" value="01. 서울모집홍보팀" oninput="onFormFieldChange()" placeholder="01. 서울모집홍보팀">
+        </div>
+        <div class="form-group">
+          <label>활동장소 <span class="req">*</span></label>
+          <input type="text" id="f_place" class="form-control" value="한빛대학교" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>활동유형 <span class="req">*</span></label>
+          <input type="text" id="f_type" class="form-control" value="부스운영" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>광역</label>
+          <input type="text" id="f_region" class="form-control" value="서울" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>세부지역</label>
+          <input type="text" id="f_subregion" class="form-control" value="관악구" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>담당자 (익명코드)</label>
+          <input type="text" id="f_officer" class="form-control" value="A-001" oninput="onFormFieldChange()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 2: 실적 수치 -->
+    <div class="form-subgroup">
+      <div class="subgroup-title">2. 실적 수치</div>
+      <div class="form-grid-2col">
+        <div class="form-group">
+          <label>상담자수 <span class="req">*</span></label>
+          <input type="number" id="f_consult" class="form-control" value="23" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>관심표명</label>
+          <input type="number" id="f_interest" class="form-control" value="9" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>지원표명</label>
+          <input type="number" id="f_apply" class="form-control" value="3" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>포스터배포 (접촉수 기준)</label>
+          <input type="number" id="f_poster" class="form-control" value="150" oninput="onFormFieldChange()">
+        </div>
+        <div class="form-group">
+          <label>기념품배부</label>
+          <input type="number" id="f_gift" class="form-control" value="40" oninput="onFormFieldChange()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 3: 특이사항 -->
+    <div class="form-subgroup" style="margin-bottom:0;">
+      <div class="subgroup-title">3. 특이사항</div>
+      <div class="form-group full-width">
+        <label>특이사항 <span class="req">*</span></label>
+        <input type="text" id="f_notes" class="form-control" value="기계공학과 심화설명회와 공병 문의가 많았음." oninput="onFormFieldChange()" placeholder="특이사항 입력">
+      </div>
+    </div>
+
+    <!-- 결과보고 3문장 -->
+    <div class="report-box">
+      <div class="report-title">결과보고 3문장 (보고용 완결 문장)</div>
+      <div class="report-line" id="repLine1">2026-08-16 한빛대학교에서 부스운영 활동을 수행하여 총 23명과 1:1 상담을 완료하였습니다.</div>
+      <div class="report-line" id="repLine2">상담자 중 9명이 관심을 표명하였고 3명이 지원 의향을 밝혔으며, 포스터 150장을 배포하였습니다.</div>
+      <div class="report-line" id="repLine3">기계공학과 심화설명회와 공병 문의가 많았음.</div>
+    </div>
+
+    <!-- 상세 데이터 보기 (JSON 접기/펼치기) -->
+    <div class="collapsible-box">
+      <div class="collapsible-header" onclick="toggleCollapsible('jsonRecordBox', this)">
+        <span>상세 데이터 보기 (활동 레코드 JSON)</span>
+        <span style="font-size:11px;">▼ 펼치기</span>
+      </div>
+      <div class="collapsible-content" id="jsonRecordBox">
+{
+  "활동일자": "2026-08-16",
+  "팀": "01. 서울모집홍보팀",
+  "담당자": "A-001",
+  "광역": "서울",
+  "세부지역": "관악구",
+  "활동장소": "한빛대학교",
+  "활동유형": "부스운영",
+  "상담자수": 23,
+  "관심표명": 9,
+  "지원표명": 3,
+  "포스터배포": 150,
+  "기념품배부": 40,
+  "특이사항": "기계공학과 심화설명회와 공병 문의가 많았음."
+}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== [카드 2] 대시보드 ==================== -->
+  <section class="card-section" id="card2">
+    <div class="section-header">
+      <div>
+        <div class="section-title-group">
+          <span class="section-tag">[카드 2] 모드 ②</span>
+          <h2 class="section-title">정량 분석 및 다음주 추천</h2>
+        </div>
+        <div class="section-desc">누적 합성 데이터(34건+) 기반 펀널 전환율과 규칙 엔진(R1~R5)으로 도출된 추천안입니다.</div>
+      </div>
+      <span class="safety-tag primary" id="dataCountBadge">누적 34건 분석 완료</span>
+    </div>
+
+    <!-- 1. 모집홍보 4단계 펀널 -->
+    <div class="dash-subgroup">
+      <div class="dash-subgroup-title">
+        <span>1. 모집홍보 4단계 펀널 및 전환율</span>
+        <span style="font-size:12.5px; color:var(--ink-dim);">집계값 기준 / 개인정보 없음</span>
+      </div>
+
+      <div class="funnel-row">
+        <div class="funnel-card">
+          <div class="fn-step-label">STEP 1</div>
+          <div class="fn-step-name">접촉</div>
+          <div class="fn-step-count" id="fnContactCount">3,840명</div>
+          <div><span class="fn-step-conv" id="fnConv1">접촉→상담 21%</span></div>
+        </div>
+
+        <div class="funnel-card">
+          <div class="fn-step-label">STEP 2</div>
+          <div class="fn-step-name">상담</div>
+          <div class="fn-step-count" id="fnConsultCount">820명</div>
+          <div><span class="fn-step-conv" id="fnConv2">상담→관심 28%</span></div>
+        </div>
+
+        <div class="funnel-card">
+          <div class="fn-step-label">STEP 3</div>
+          <div class="fn-step-name">관심표명</div>
+          <div class="fn-step-count" id="fnInterestCount">228명</div>
+          <div><span class="fn-step-conv" id="fnConv3">관심→지원 35%</span></div>
+        </div>
+
+        <div class="funnel-card">
+          <div class="fn-step-label">STEP 4</div>
+          <div class="fn-step-name">지원표명</div>
+          <div class="fn-step-count" id="fnApplyCount">80명</div>
+          <div><span class="fn-step-conv" id="fnConvTotal">전체 전환 10%</span></div>
+        </div>
+      </div>
+
+      <div class="dropoff-box" id="dropoffAlert">
+        <span>⚠</span>
+        <span id="dropoffText">접촉 → 상담 구간에서 이탈이 가장 큽니다 (21% / 접촉 3,840명 중 820명 상담 전환)</span>
+      </div>
+    </div>
+
+    <!-- 2. 주간 KPI 지표 -->
+    <div class="dash-subgroup">
+      <div class="dash-subgroup-title">2. 주간 주요 활동 지표</div>
+      <div class="kpi-grid">
+        <div class="kpi-item">
+          <div class="kpi-item-label">총 활동 건수</div>
+          <div class="kpi-item-value" id="kpiTotalEvents">34건</div>
+          <div class="kpi-item-sub">서울 권역 누적</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-item-label">총 상담 인원</div>
+          <div class="kpi-item-value" id="kpiTotalConsult">820명</div>
+          <div class="kpi-item-sub">1:1 개별 상담</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-item-label">평균 관심 전환율</div>
+          <div class="kpi-item-value" id="kpiAvgInterestRate">28%</div>
+          <div class="kpi-item-sub">상담→관심 기준</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-item-label">총 지원 표명</div>
+          <div class="kpi-item-value" id="kpiTotalApply">80명</div>
+          <div class="kpi-item-sub">관심→지원 35%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 장소별 효율 상위/하위 3개소 -->
+    <div class="dash-subgroup">
+      <div class="dash-subgroup-title">3. 장소별 효율(상담→관심) 비교</div>
+      <div class="eff-grid">
+        <div class="eff-box">
+          <div class="eff-title top">효율 상위 3개소</div>
+          <ul class="eff-list" id="effTopList"></ul>
+        </div>
+        <div class="eff-box">
+          <div class="eff-title bottom">효율 하위 3개소</div>
+          <ul class="eff-list" id="effBottomList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 다음주 추천 3순위 -->
+    <div class="dash-subgroup" style="margin-bottom:0;">
+      <div class="dash-subgroup-title">
+        <span>4. 다음주 추천 (규칙 엔진 R1~R5 적용)</span>
+        <span style="font-size:12.5px; color:var(--ink-dim);">수락/거절은 개인평가와 무관합니다</span>
+      </div>
+      <div class="recomm-list" id="recommCardsList"></div>
+    </div>
+  </section>
+
+  <!-- ==================== [카드 3] 기획안 ==================== -->
+  <section class="card-section" id="card3">
+    <div class="section-header">
+      <div>
+        <div class="section-title-group">
+          <span class="section-tag">[카드 3] 모드 ③</span>
+          <h2 class="section-title">카드뉴스 기획안 자동 편성</h2>
+        </div>
+        <div class="section-desc">모드 ②의 추천 순위와 최신 특이사항을 재질문 없이 연계하여 기획안을 생성합니다.</div>
+      </div>
+    </div>
+
+    <!-- 수락된 순위 전달 및 원클릭 버튼 트리거 -->
+    <div class="planning-trigger-box">
+      <div class="planning-trigger-info">
+        <div class="planning-target-lead" id="planTriggerLead">추천 1순위 대상: 한빛대학교 기계공학과</div>
+        <div class="planning-target-sub" id="planTriggerSub">적용 규칙: R1 (재방문 + 심화) · 추천 병과: 기갑, 공병 (참고 제시)</div>
+      </div>
+      <button class="btn btn-primary" id="btnGeneratePlan" onclick="generatePlanningFromSelected()">1순위로 기획안 만들기</button>
+    </div>
+
+    <!-- 기획안 결과 영역 -->
+    <div class="plan-result-container" id="planResultContainer">
+      
+      <!-- 카피안 & 소구점 명세 -->
+      <div class="plan-specs-grid">
+        <div class="plan-spec-card">
+          <div class="plan-spec-title">
+            <span>헤드카피 & 서브카피 (20자 이내 전공 언어)</span>
+            <span style="font-size:12px; color:var(--olive-light);">3개 시안</span>
+          </div>
+          <ul class="spec-item-list" id="copySpecList">
+            <li class="spec-item"><b>안 1</b>: 기계공학 전공을 살리는 기술장교·부사관 커리어<br><span style="font-size:12.5px; color:var(--ink-muted);">서브: 최첨단 기갑·공병 장비 운용과 전공 기술 전문성 연계</span></li>
+            <li class="spec-item"><b>안 2</b>: 메커니즘을 움직이는 힘, 기동·건설 공학 장교<br><span style="font-size:12.5px; color:var(--ink-muted);">서브: 첨단 무기체계 연구개발 및 기술 관리자 트랙</span></li>
+            <li class="spec-item"><b>안 3</b>: 학업과 경력을 동시에 잇는 육군 공학 기술전문가<br><span style="font-size:12.5px; color:var(--ink-muted);">서브: 복무 중 방산·공학 실무 경력 인정 및 경력 개발</span></li>
+          </ul>
+        </div>
+
+        <div class="plan-spec-card">
+          <div class="plan-spec-title">
+            <span>대상별 소구 포인트 3개</span>
+            <span style="font-size:12px; color:var(--olive-light);">학과 맞춤형</span>
+          </div>
+          <ul class="spec-item-list" id="appealSpecList">
+            <li class="spec-item"><b>소구 1</b>: 기계·공학 메커니즘 해석 역량을 실전 기동·시설 장비에 직접 적용</li>
+            <li class="spec-item"><b>소구 2</b>: 군 복무 중 방산·공학 실무 경력 인정 및 장기 기술 경력 개발</li>
+            <li class="spec-item"><b>소구 3</b>: 첨단 무기체계 연구개발 및 기술 관리자 트랙 진출 가능</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 카드뉴스 4면 미리보기 (assets/카드뉴스.html 구조 100% 보존 임베드) -->
+      <div class="cardnews-preview-wrapper">
+        <div style="font-size:14px; font-weight:800; color:var(--title-color); margin-bottom:16px; text-align:center;">
+          카드뉴스 4면 템플릿 미리보기 (사람이 검수할 기획안)
+        </div>
+
+        <div class="deck-preview">
+          <!-- 1면 : 표지 -->
+          <div class="cn-card cn-cover">
+            <div class="bar" style="background:#8A9B52"></div>
+            <div class="inner">
+              <div class="to" id="cnCoverTo">한빛대학교 기계공학과</div>
+              <h1 id="cnCoverHead">기계공학 전공을 살리는 기술장교·부사관 커리어</h1>
+              <div class="rule"></div>
+              <p class="sub" id="cnCoverSub">최첨단 기갑·공병 장비 운용과 전공 기술 전문성 연계</p>
+              <div class="type" id="cnCoverType" style="margin-top:16px">학과설명회</div>
+            </div>
+          </div>
+
+          <!-- 2면 : 소구 포인트 -->
+          <div class="cn-card">
+            <div class="bar"></div>
+            <div class="inner">
+              <div class="cn-idx">POINT</div>
+              <h2 style="font-size:17px; color:var(--navy); margin:0 0 12px;">이 학과 학생에게 특히 맞는 이유</h2>
+              <ul class="cn-pt">
+                <li><span class="n">1</span><span id="cnPt1">기계·공학 메커니즘 해석 역량을 실전 기동·시설 장비에 직접 적용</span></li>
+                <li><span class="n">2</span><span id="cnPt2">군 복무 중 방산·공학 실무 경력 인정 및 장기 기술 경력 개발</span></li>
+                <li><span class="n">3</span><span id="cnPt3">첨단 무기체계 연구개발 및 기술 관리자 트랙 진출 가능</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 3면 : 연계 병과 -->
+          <div class="cn-card">
+            <div class="bar" style="background:var(--olive)"></div>
+            <div class="inner">
+              <div class="cn-idx">BRANCH</div>
+              <h2 style="font-size:17px; color:var(--navy); margin:0 0 12px;">전공과 이어지는 병과</h2>
+              <div class="cn-jobs">
+                <span id="cnBranch1">기갑</span>
+                <span id="cnBranch2">공병</span>
+              </div>
+              <p class="cn-hint">※ 전공 기반 <b>참고 제시</b>이며 실제 병과 분류는 선발 절차에 따릅니다.</p>
+            </div>
+          </div>
+
+          <!-- 4면 : 안내 -->
+          <div class="cn-card">
+            <div class="bar"></div>
+            <div class="inner">
+              <div class="cn-idx">INFO</div>
+              <h2 style="font-size:17px; color:var(--navy); margin:0 0 12px;">안내</h2>
+              <p class="cn-info">
+                <b>행사</b> <span id="cnInfoType">학과설명회</span><br>
+                <b>일시·장소</b> <span id="cnInfoSchedule">[확인 필요] (학과 사무실 협의 후 확정)</span><br>
+                <b>대상</b> <span id="cnInfoTarget">한빛대학교 기계공학과</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- 출처 및 안전 안내 -->
+          <div class="cn-src">
+            ※ 인용 : 「2026 육군 모집안내」 (기준일 2026-08-01) · 검토 상태 : <b>초안</b><br>
+            ※ 본 자료의 모든 데이터는 실존 인물·기관과 무관하게 만든 <b>합성 데이터</b>입니다.<br>
+            ※ 확인되지 않은 사실은 <b>[확인 필요]</b>로 표기되며, 대외 사용 전 담당자 검토가 필요합니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== [부속 ④] 후속 메일 초안 ==================== -->
+  <section class="mail-draft-section" id="card4">
+    <div class="mail-header">
+      <div class="mail-title-badge">
+        <span class="section-tag">[부속 ④] 모드 ④</span>
+        <span style="font-size:18px; font-weight:800; color:var(--title-color);">후속 연락 협조 요청 메일 초안</span>
+      </div>
+      <div class="mail-warn-tag">초안 · 검토 후 사용 (발송 기능 없음)</div>
+    </div>
+
+    <!-- 제목안 2개 -->
+    <div class="mail-subject-options">
+      <div class="subject-pill">
+        <b>제목안 1:</b> [육군모집홍보팀] 한빛대학교 기계공학과 맞춤형 진로·기술병과 설명회 일정 협조의 건
+      </div>
+      <div class="subject-pill">
+        <b>제목안 2:</b> [후속협의] 한빛대학교 기계공학 전공 연계 장교·부사관 심화 설명회 개최 안내
+      </div>
+    </div>
+
+    <!-- 본문 -->
+    <div class="mail-body-content" id="mailBodyContent">
+한빛대학교 학과사무실 / 취업지원처 담당자님 귀하,
+
+안녕하십니까. 육군모집홍보 업무 수행팀입니다.
+
+귀교 학생들의 전공 역량 발전과 진로 설계 지원에 깊은 감사를 드립니다.
+지난 2026년 8월 16일 귀교에서 진행된 부스 운영 활동에서 총 23명의 학생과 1:1 상담을 진행하였으며, 특히 기계공학과 학생들의 공병 및 기갑 분야에 대한 높은 관심(관심 표명 9명)을 확인하였습니다.
+
+이에 상담 학생들의 지속적인 관심과 구체적인 지원 절차 안내를 위해 다음과 같이 「기계공학과 맞춤형 기술병과 심화설명회」를 제안드리오니 일정 검토를 부탁드립니다.
+
+1. 행사명: 한빛대학교 기계공학과 전공 연계 기술병과 심화설명회
+2. 대상: 기계공학과 재학생 및 군 진로 관심 학생
+3. 주요내용: 기갑·공병 병과 전공 연계 소개, 기술장교·부사관 선발 기준 안내
+4. 일시 및 장소: [확인 필요] (학과 일정에 맞추어 조율 가능)
+
+본 메일은 공식 협조 전 발송 초안이며, 상세 세부사항은 담당자 검토 후 최종 확정될 예정입니다.
+
+감사합니다.
+
+현장 모집홍보 업무 수행팀 배상
+    </div>
+
+    <div class="mail-footer-note">
+      <span>권장 다음 연락 시점: 활동 후 3~5일 이내 (2026-08-19 ~ 2026-08-21)</span>
+      <span>※ 개인 연락처 미수집 및 실제 메일 발송 버튼 배제 (시연규칙 제3절 준수)</span>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ==========================================================================
+   내장 시드 데이터 (34건) — assets/한빛대_시드.json 완벽 내장
+   ========================================================================== */
+const DEMO_DATE = "2026-08-16";
+
+const INITIAL_SEED_DATA = [
+  {"활동일자":"2026-06-02","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"관악구","활동장소":"청람대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":26,"관심표명":7,"지원표명":2,"포스터배포":160,"기념품배부":45,"특이사항":"기계·전자 계열 문의 다수"},
+  {"활동일자":"2026-06-04","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"노원구","활동장소":"세움고등학교","활동유형":"설명회","활동시간":1.5,"상담자수":34,"관심표명":9,"지원표명":4,"포스터배포":120,"기념품배부":30,"특이사항":"3학년 진로시간 활용, 반응 양호"},
+  {"활동일자":"2026-06-09","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"동대문구","활동장소":"도담대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":21,"관심표명":5,"지원표명":1,"포스터배포":140,"기념품배부":40,"특이사항":"부스 위치가 외곽이라 유동 적음"},
+  {"활동일자":"2026-06-11","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"성북구","활동장소":"온누리고등학교","활동유형":"강연","활동시간":1.0,"상담자수":45,"관심표명":10,"지원표명":3,"포스터배포":150,"기념품배부":0,"특이사항":"안보강연 형식, 인원은 많으나 개별 관심은 보통"},
+  {"활동일자":"2026-06-18","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"관악구","활동장소":"한빛대학교","활동유형":"설명회","활동시간":2.0,"상담자수":17,"관심표명":8,"지원표명":2,"포스터배포":90,"기념품배부":25,"특이사항":"기계공학과 학과설명회, 공병·기갑 질문 집중"},
+  {"활동일자":"2026-06-23","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"강서구","활동장소":"나래대학교","활동유형":"부스운영","활동시간":3.5,"상담자수":29,"관심표명":8,"지원표명":3,"포스터배포":170,"기념품배부":50,"특이사항":"취업박람회 동시 진행"},
+  {"활동일자":"2026-06-25","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"중랑구","활동장소":"푸른솔고등학교","활동유형":"설명회","활동시간":1.5,"상담자수":28,"관심표명":7,"지원표명":3,"포스터배포":110,"기념품배부":25,"특이사항":"부사관 과정 문의 증가"},
+  {"활동일자":"2026-06-30","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"동작구","활동장소":"별터대학교","활동유형":"방문상담","활동시간":2.0,"상담자수":12,"관심표명":3,"지원표명":1,"포스터배포":40,"기념품배부":10,"특이사항":"취업지원팀 협조로 개별 상담"},
+  {"활동일자":"2026-07-02","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"노원구","활동장소":"한마루대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":31,"관심표명":8,"지원표명":3,"포스터배포":180,"기념품배부":55,"특이사항":"컴퓨터공학 계열 정보통신 병과 관심"},
+  {"활동일자":"2026-07-07","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"성동구","활동장소":"다온고등학교","활동유형":"강연","활동시간":1.0,"상담자수":52,"관심표명":12,"지원표명":4,"포스터배포":160,"기념품배부":0,"특이사항":"전교생 대상, 개별 상담 연계 부족"},
+  {"활동일자":"2026-07-09","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"관악구","활동장소":"한빛대학교","활동유형":"방문상담","활동시간":2.0,"상담자수":11,"관심표명":4,"지원표명":1,"포스터배포":35,"기념품배부":10,"특이사항":"6월 설명회 후속, 재문의 학생 중심"},
+  {"활동일자":"2026-07-14","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"은평구","활동장소":"예솔고등학교","활동유형":"설명회","활동시간":1.5,"상담자수":24,"관심표명":6,"지원표명":2,"포스터배포":100,"기념품배부":25,"특이사항":"장교 과정 위주 질문"},
+  {"활동일자":"2026-07-16","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"금천구","활동장소":"미르공업고등학교","활동유형":"부스운영","활동시간":3.0,"상담자수":33,"관심표명":11,"지원표명":5,"포스터배포":170,"기념품배부":50,"특이사항":"공업계 특성상 공병·군수 관심 높음"},
+  {"활동일자":"2026-07-21","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"마포구","활동장소":"새얼대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":27,"관심표명":7,"지원표명":2,"포스터배포":150,"기념품배부":45,"특이사항":"방학 중이라 유동 적음"},
+  {"활동일자":"2026-07-23","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"강북구","활동장소":"하늘터고등학교","활동유형":"캠프","활동시간":6.0,"상담자수":19,"관심표명":9,"지원표명":4,"포스터배포":60,"기념품배부":20,"특이사항":"부대견학 연계, 체험 만족도 높음"},
+  {"활동일자":"2026-07-28","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"서대문구","활동장소":"청람대학교","활동유형":"설명회","활동시간":1.5,"상담자수":22,"관심표명":6,"지원표명":2,"포스터배포":95,"기념품배부":20,"특이사항":"2차 방문, 첫 방문 대비 관심 유사"},
+  {"활동일자":"2026-07-30","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"광진구","활동장소":"도담대학교","활동유형":"방문상담","활동시간":2.0,"상담자수":14,"관심표명":4,"지원표명":1,"포스터배포":45,"기념품배부":12,"특이사항":"학과 사무실 협조 상담"},
+  {"활동일자":"2026-08-04","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"구로구","활동장소":"나래대학교","활동유형":"설명회","활동시간":1.5,"상담자수":26,"관심표명":7,"지원표명":3,"포스터배포":105,"기념품배부":25,"특이사항":"전자공학과 대상"},
+  {"활동일자":"2026-08-06","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"송파구","활동장소":"온누리고등학교","활동유형":"방문상담","활동시간":2.0,"상담자수":16,"관심표명":4,"지원표명":2,"포스터배포":50,"기념품배부":15,"특이사항":"담임 추천 학생 개별 상담"},
+  {"활동일자":"2026-08-11","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"양천구","활동장소":"세움고등학교","활동유형":"부스운영","활동시간":3.0,"상담자수":30,"관심표명":8,"지원표명":3,"포스터배포":165,"기념품배부":48,"특이사항":"학교축제 연계 부스"},
+  {"활동일자":"2026-08-13","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"용산구","활동장소":"한마루대학교","활동유형":"방문상담","활동시간":2.0,"상담자수":13,"관심표명":4,"지원표명":1,"포스터배포":42,"기념품배부":12,"특이사항":"공학계열 3학년 중심"},
+  {"활동일자":"2026-08-14","팀":"01. 서울모집홍보팀","담당자":"A-003","광역":"서울","세부지역":"노원구","활동장소":"다온고등학교","활동유형":"설명회","활동시간":1.5,"상담자수":25,"관심표명":6,"지원표명":2,"포스터배포":100,"기념품배부":22,"특이사항":"2학년 대상 사전 홍보"},
+  {"활동일자":"2026-05-21","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"관악구","활동장소":"한빛대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":15,"관심표명":6,"지원표명":2,"포스터배포":85,"기념품배부":25,"특이사항":"공대 진로주간 부스, 기계·토목 계열 관심"},
+  {"활동일자":"2026-06-05","팀":"01. 서울모집홍보팀","담당자":"A-002","광역":"서울","세부지역":"관악구","활동장소":"한빛대학교","활동유형":"방문상담","활동시간":2.0,"상담자수":9,"관심표명":4,"지원표명":1,"포스터배포":30,"기념품배부":8,"특이사항":"학과 사무실 협조 개별 상담"},
+  {"활동일자":"2026-07-25","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"관악구","활동장소":"한빛대학교","활동유형":"강연","활동시간":1.0,"상담자수":12,"관심표명":5,"지원표명":1,"포스터배포":45,"기념품배부":0,"특이사항":"공학계열 진로특강, 공병 병과 질문 다수"},
+  {"활동일자":"2026-08-05","팀":"01. 서울모집홍보팀","담당자":"A-001","광역":"서울","세부지역":"관악구","활동장소":"한빛대학교","활동유형":"설명회","활동시간":2.0,"상담자수":18,"관심표명":7,"지원표명":2,"포스터배포":95,"기념품배부":20,"특이사항":"기계공학과 심화설명회, 6월 설명회 재방문 학생 다수 참석"},
+  {"활동일자":"2026-07-03","팀":"05. 경기남부모집홍보팀","담당자":"B-011","광역":"경기","세부지역":"수원시","활동장소":"별터대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":28,"관심표명":8,"지원표명":3,"포스터배포":155,"기념품배부":45,"특이사항":"수도권 남부 공동 박람회"},
+  {"활동일자":"2026-07-10","팀":"05. 경기남부모집홍보팀","담당자":"B-012","광역":"경기","세부지역":"용인시","활동장소":"예솔고등학교","활동유형":"설명회","활동시간":1.5,"상담자수":23,"관심표명":6,"지원표명":2,"포스터배포":95,"기념품배부":20,"특이사항":""},
+  {"활동일자":"2026-07-17","팀":"13. 대전·충남모집홍보팀","담당자":"C-021","광역":"대전","세부지역":"유성구","활동장소":"미르공업고등학교","활동유형":"부스운영","활동시간":3.0,"상담자수":26,"관심표명":7,"지원표명":3,"포스터배포":150,"기념품배부":42,"특이사항":"과학고 인접, 정보통신 관심"},
+  {"활동일자":"2026-07-24","팀":"13. 대전·충남모집홍보팀","담당자":"C-022","광역":"충남","세부지역":"천안시","활동장소":"하늘터고등학교","활동유형":"강연","활동시간":1.0,"상담자수":41,"관심표명":9,"지원표명":3,"포스터배포":140,"기념품배부":0,"특이사항":""},
+  {"활동일자":"2026-08-05","팀":"14. 대구·경북모집홍보팀","담당자":"D-031","광역":"대구","세부지역":"달서구","활동장소":"새얼대학교","활동유형":"부스운영","활동시간":3.0,"상담자수":29,"관심표명":8,"지원표명":3,"포스터배포":160,"기념품배부":46,"특이사항":""},
+  {"활동일자":"2026-08-07","팀":"14. 대구·경북모집홍보팀","담당자":"D-032","광역":"경북","세부지역":"포항시","활동장소":"푸른솔고등학교","활동유형":"설명회","활동시간":1.5,"상담자수":22,"관심표명":6,"지원표명":2,"포스터배포":90,"기념품배부":20,"특이사항":""},
+  {"활동일자":"2026-08-12","팀":"16. 부산·울산모집홍보팀","담당자":"E-041","광역":"부산","세부지역":"해운대구","활동장소":"청람대학교","활동유형":"방문상담","활동시간":2.0,"상담자수":15,"관심표명":4,"지원표명":1,"포스터배포":48,"기념품배부":14,"특이사항":""},
+  {"활동일자":"2026-08-13","팀":"16. 부산·울산모집홍보팀","담당자":"E-042","광역":"울산","세부지역":"남구","활동장소":"다온고등학교","활동유형":"캠프","활동시간":6.0,"상담자수":18,"관심표명":8,"지원표명":3,"포스터배포":55,"기념품배부":18,"특이사항":"부대견학 연계"}
+];
+
+// 메모리 상의 활동 레코드 배열 (새로고침 시 초기화)
+let currentRecords = JSON.parse(JSON.stringify(INITIAL_SEED_DATA));
+
+// 현재 추천 목록 (최대 3개)
+let currentRecommendations = [];
+
+// 추천 수락/거절 상태 이력 객체
+let recommendationHistory = {};
+
+// 현재 선택된 추천 인덱스 (기본값: 0 즉 1순위)
+let selectedRecommendationIndex = 0;
+
+// 학과 -> 병과 매핑 테이블 (코드표.md 4절)
+const MAJOR_BRANCH_MAP = {
+  "기계": ["기갑", "공병"],
+  "자동차": ["기갑", "공병"],
+  "토목": ["공병"],
+  "건축": ["공병"],
+  "전자": ["정보통신", "방공"],
+  "전기": ["정보통신", "방공"],
+  "통신": ["정보통신", "방공"],
+  "컴퓨터": ["정보통신", "정보"],
+  "소프트웨어": ["정보통신", "정보"],
+  "항공": ["항공"],
+  "우주": ["항공"],
+  "화학": ["화생방"],
+  "환경": ["화생방"],
+  "경영": ["군수", "인사"],
+  "경제": ["군수", "인사"],
+  "행정": ["군수", "인사"],
+  "간호": ["의무"],
+  "보건": ["의무"]
+};
+
+/* ==========================================================================
+   초기 실행
+   ========================================================================== */
+window.onload = function() {
+  loadDefaultExample();
+  recalculateDashboard();
+};
+
+/* ==========================================================================
+   모드 ① 현장 기록 파싱 및 저장 로직
+   ========================================================================== */
+const DEFAULT_EXAMPLE_TEXT = "2026-08-16 서울 관악구 한빛대학교에서 부스 운영, 상담 23명, 관심 9명, 지원 의향 3명, 포스터 150장 배포. 기계공학과 심화설명회와 공병 문의가 많았음.";
+const INCOMPLETE_EXAMPLE_TEXT = "한빛대학교에서 부스 운영, 상담 23명, 관심 9명. 특이사항 없음.";
+
+// 광역 -> 팀 코드 매핑 테이블 (코드표.md 1절)
+const REGION_TEAM_MAP = {
+  "서울": "01. 서울모집홍보팀",
+  "인천": "02. 경기·인천모집홍보팀",
+  "경기": "05. 경기남부모집홍보팀",
+  "전북": "07. 전북모집홍보팀",
+  "광주": "08. 광주·전남모집홍보팀",
+  "전남": "08. 광주·전남모집홍보팀",
+  "강원": "09. 강원동부모집홍보팀",
+  "충북": "12. 충북·세종모집홍보팀",
+  "세종": "12. 충북·세종모집홍보팀",
+  "대전": "13. 대전·충남모집홍보팀",
+  "충남": "13. 대전·충남모집홍보팀",
+  "대구": "14. 대구·경북모집홍보팀",
+  "경북": "14. 대구·경북모집홍보팀",
+  "경남": "15. 경남모집홍보팀",
+  "부산": "16. 부산·울산모집홍보팀",
+  "울산": "16. 부산·울산모집홍보팀",
+  "제주": "01. 서울모집홍보팀"
+};
+
+// 메모칸 사용자 직접 수정 여부 추적 플래그 (덮어쓰기 방지)
+let memoTouchedByUser = false;
+
+function loadDefaultExample() {
+  memoTouchedByUser = false;
+  document.getElementById("memoInput").value = DEFAULT_EXAMPLE_TEXT;
+  parseNaturalLanguage();
+}
+
+function loadIncompleteExample() {
+  memoTouchedByUser = false;
+  document.getElementById("memoInput").value = INCOMPLETE_EXAMPLE_TEXT;
+  parseNaturalLanguage();
+}
+
+function onMemoInputChange() {
+  memoTouchedByUser = true;
+  const text = document.getElementById("memoInput").value.trim();
+  if (text.length > 5) {
+    document.getElementById("recordStatusTag").innerText = "메모 수정 중 (자연어 파싱 권장)";
+    document.getElementById("recordStatusTag").style.color = "var(--ink-muted)";
+  }
+}
+
+function startVoiceMemo() {
+  const memoEl = document.getElementById("memoInput");
+  memoEl.focus();
+  const len = memoEl.value.length;
+  memoEl.setSelectionRange(len, len);
+  memoEl.scrollTop = memoEl.scrollHeight;
+
+  memoTouchedByUser = true;
+
+  // OS 판별 (Mac vs Windows/기타)
+  const isMac = (navigator.userAgentData?.platform?.includes("Mac") || navigator.userAgent.includes("Mac"));
+  const guideTextEl = document.getElementById("voiceGuideText");
+  if (isMac) {
+    guideTextEl.innerText = "메모칸에 커서를 놓았습니다. 받아쓰기 단축키를 누르고 말씀하세요. (기본: fn 키를 두 번 또는 🎤 키)";
+  } else {
+    guideTextEl.innerText = "메모칸에 커서를 놓았습니다. 이제 Windows 키 + H 를 누르고 말씀하세요.";
+  }
+
+  document.getElementById("voiceGuideBox").style.display = "block";
+
+  // 자연어 파싱 버튼 강조
+  const parseBtn = document.getElementById("btnParseNatural");
+  if (parseBtn) {
+    parseBtn.classList.add("btn-highlight-parse");
+  }
+}
+
+function closeVoiceGuide() {
+  document.getElementById("voiceGuideBox").style.display = "none";
+}
+
+function rebuildMemoFromForm() {
+  memoTouchedByUser = false;
+  syncFormToMemoText();
+  document.getElementById("recordStatusTag").innerText = "메모가 폼 내용으로 동기화되었습니다";
+  document.getElementById("recordStatusTag").style.color = "var(--olive-light)";
+}
+
+function syncFormToMemoText() {
+  if (memoTouchedByUser) return;
+
+  const dVal = document.getElementById("f_date").value.trim();
+  const pVal = document.getElementById("f_place").value.trim();
+  const tVal = document.getElementById("f_type").value.trim();
+  const cVal = document.getElementById("f_consult").value.trim();
+  const iVal = document.getElementById("f_interest").value.trim();
+  const aVal = document.getElementById("f_apply").value.trim();
+  const posVal = document.getElementById("f_poster").value.trim();
+  const nVal = document.getElementById("f_notes").value.trim();
+
+  let sentence = "";
+  if (dVal) sentence += `${dVal} `;
+  if (pVal) sentence += `${pVal}에서 `;
+  if (tVal) sentence += `${tVal}, `;
+  if (cVal) sentence += `상담 ${cVal}명, `;
+  if (iVal) sentence += `관심 ${iVal}명, `;
+  if (aVal && aVal !== "0") sentence += `지원 의향 ${aVal}명, `;
+  if (posVal && posVal !== "0") sentence += `포스터 ${posVal}장 배포. `;
+  if (nVal) sentence += `${nVal}`;
+
+  if (sentence.trim()) {
+    document.getElementById("memoInput").value = sentence.trim();
+  }
+}
+
+function onFormFieldChange() {
+  const dVal = document.getElementById("f_date").value.trim();
+  const pVal = document.getElementById("f_place").value.trim();
+  const tVal = document.getElementById("f_type").value.trim();
+  const cVal = document.getElementById("f_consult").value.trim();
+  const iVal = document.getElementById("f_interest").value.trim();
+  const aVal = document.getElementById("f_apply").value.trim();
+  const posVal = document.getElementById("f_poster").value.trim();
+  const nVal = document.getElementById("f_notes").value.trim();
+  const teamVal = document.getElementById("f_team").value.trim();
+
+  syncFormToMemoText();
+  updateReportLines(dVal, pVal, tVal, cVal, iVal, aVal, posVal, nVal);
+  document.getElementById("f_team_est").style.display = (teamVal && teamVal.includes("홍보팀")) ? "inline-block" : "none";
+  validateRequiredFields();
+  updateJsonView();
+}
+
+function parseNaturalLanguage() {
+  // 자연어 파싱 버튼 강조 해제
+  const parseBtn = document.getElementById("btnParseNatural");
+  if (parseBtn) {
+    parseBtn.classList.remove("btn-highlight-parse");
+  }
+
+  const text = document.getElementById("memoInput").value.trim();
+  if (!text) {
+    document.getElementById("f_date").value = "";
+    document.getElementById("f_place").value = "";
+    document.getElementById("f_type").value = "";
+    document.getElementById("f_consult").value = "";
+    document.getElementById("f_interest").value = "";
+    document.getElementById("f_apply").value = "";
+    document.getElementById("f_poster").value = "";
+    document.getElementById("f_gift").value = "";
+    document.getElementById("f_region").value = "";
+    document.getElementById("f_subregion").value = "";
+    document.getElementById("f_team").value = "";
+    document.getElementById("f_officer").value = "";
+    document.getElementById("f_notes").value = "";
+    document.getElementById("f_date_est").style.display = "none";
+    document.getElementById("f_team_est").style.display = "none";
+    validateRequiredFields();
+    updateReportLines("", "", "", "", "", "", "", "");
+    updateJsonView();
+    return;
+  }
+
+  // 1. 활동일자 (f_date)
+  const dateMatch = text.match(/(20\d{2}[-./]\d{1,2}[-./]\d{1,2})/);
+  let dateVal = "";
+  let isDateEstimated = false;
+  if (dateMatch) {
+    dateVal = dateMatch[1].replace(/\./g, '-').replace(/\//g, '-');
+  } else {
+    dateVal = DEMO_DATE;
+    isDateEstimated = true;
+  }
+  document.getElementById("f_date").value = dateVal;
+  const dateEstBadge = document.getElementById("f_date_est");
+  if (dateEstBadge) {
+    dateEstBadge.style.display = isDateEstimated ? "inline-block" : "none";
+  }
+
+  // 2. 활동장소 (f_place)
+  let placeVal = "";
+  const knownPlaces = [
+    "한빛대학교", "한빛대", "청람대학교", "청람대", "도담대학교", "도담대", 
+    "나래대학교", "나래대", "세움고등학교", "세움고", "온누리고등학교", "온누리고",
+    "한마루대학교", "한마루대", "별터대학교", "별터대", "새얼대학교", "새얼대",
+    "다온고등학교", "다온고", "예솔고등학교", "예솔고", "미르공업고등학교", "미르공고",
+    "하늘터고등학교", "하늘터고", "푸른솔고등학교", "푸른솔고"
+  ];
+  for (const kp of knownPlaces) {
+    if (text.includes(kp)) {
+      if (kp.endsWith("대") && !kp.endsWith("대학교")) placeVal = kp + "학교";
+      else if (kp.endsWith("고") && !kp.endsWith("고등학교")) placeVal = kp + "등학교";
+      else placeVal = kp;
+      break;
+    }
+  }
+  if (!placeVal) {
+    const genericSchoolMatch = text.match(/([가-힣]{2,}(?:공업고등학교|고등학교|대학교|대학|중학교|공고))/);
+    if (genericSchoolMatch) {
+      placeVal = genericSchoolMatch[1];
+    }
+  }
+  document.getElementById("f_place").value = placeVal;
+
+  // 3. 활동유형 (f_type) - 우선순위: 캠프 > 부스운영 > 설명회 > 강연 > 방문상담
+  let typeVal = "";
+  if (/캠프|체험|병영체험|부대견학/.test(text)) typeVal = "캠프";
+  else if (/부스|박람회|홍보부스/.test(text)) typeVal = "부스운영";
+  else if (/설명회|브리핑/.test(text)) typeVal = "설명회";
+  else if (/강연|특강/.test(text)) typeVal = "강연";
+  else if (/방문상담|방문|개별상담|찾아가는/.test(text)) typeVal = "방문상담";
+  document.getElementById("f_type").value = typeVal;
+
+  // 4. 수치 필드 (정규식 실패 시 빈 문자열 "")
+  const consultMatch = text.match(/상담\s*(\d+)명?/);
+  const consultVal = consultMatch ? consultMatch[1] : "";
+  document.getElementById("f_consult").value = consultVal;
+
+  const interestMatch = text.match(/관심\s*(\d+)명?/);
+  const interestVal = interestMatch ? interestMatch[1] : "";
+  document.getElementById("f_interest").value = interestVal;
+
+  const applyMatch = text.match(/(?:지원\s*의향|지원표명|지원)\s*(\d+)명?/);
+  const applyVal = applyMatch ? applyMatch[1] : "";
+  document.getElementById("f_apply").value = applyVal;
+
+  const posterMatch = text.match(/포스터\s*(\d+)장?/);
+  const posterVal = posterMatch ? posterMatch[1] : "";
+  document.getElementById("f_poster").value = posterVal;
+
+  const giftMatch = text.match(/기념품\s*(\d+)개?/);
+  const giftVal = giftMatch ? giftMatch[1] : "";
+  document.getElementById("f_gift").value = giftVal;
+
+  // 5. 지역 (f_region & f_subregion)
+  const regions = ["서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"];
+  let regionVal = "";
+  for (const r of regions) {
+    if (text.includes(r)) {
+      regionVal = r;
+      break;
+    }
+  }
+  document.getElementById("f_region").value = regionVal;
+
+  let subregionVal = "";
+  const subMatch = text.match(/([가-힣]{1,4}[구시군])/);
+  if (subMatch) {
+    const candidate = subMatch[1];
+    if (!candidate.endsWith("청구") && !candidate.endsWith("연구") && !candidate.endsWith("도구") && !candidate.endsWith("친구") && !candidate.endsWith("기구")) {
+      subregionVal = candidate;
+    }
+  }
+  document.getElementById("f_subregion").value = subregionVal;
+
+  // 6. 팀 (f_team) - regionVal이 있을 때만 매핑
+  let teamVal = "";
+  let isTeamEstimated = false;
+  if (regionVal && REGION_TEAM_MAP[regionVal]) {
+    teamVal = REGION_TEAM_MAP[regionVal];
+    isTeamEstimated = true;
+  }
+  document.getElementById("f_team").value = teamVal;
+  document.getElementById("f_team_est").style.display = (isTeamEstimated && teamVal) ? "inline-block" : "none";
+
+  // 7. 담당자 (f_officer) - 항상 빈칸
+  document.getElementById("f_officer").value = "";
+
+  // 8. 특이사항 (f_notes) - 원문 발췌
+  let notesVal = "";
+  const rawSentences = text.split(/[.\n]+/).map(s => s.trim()).filter(s => s.length > 0);
+  const noteCandidates = rawSentences.filter(s => {
+    // 날짜 검사
+    if (/(20\d{2}|일자|년|월|일)/.test(s) && /\d/.test(s)) return false;
+    // 학교/장소 및 활동형태 문장 검사
+    if (/(대학교|대학|고등학교|중학교|캠프|부스|설명회|강연|방문)/.test(s) && (s.includes("에서") || s.includes("운영") || s.includes("진행") || s.includes("했음"))) return false;
+    // 수량 검사 (상담 몇명, 관심 몇명 등)
+    if (/(상담|관심|지원|포스터|기념품)\s*\d+/.test(s)) return false;
+    return true;
+  });
+
+  if (noteCandidates.length > 0) {
+    notesVal = noteCandidates.join(". ");
+    if (!notesVal.endsWith(".")) notesVal += ".";
+  }
+  document.getElementById("f_notes").value = notesVal;
+
+  updateReportLines(dateVal, placeVal, typeVal, consultVal, interestVal, applyVal, posterVal, notesVal);
+  validateRequiredFields();
+  updateJsonView();
+}
+
+function updateReportLines(date, place, type, consult, interest, apply, poster, notes) {
+  const dStr = date || "[일자 미입력]";
+  const pStr = place || "[장소 미입력]";
+  const tStr = type || "[유형 미입력]";
+  const cStr = consult !== "" ? consult : 0;
+  const iStr = interest !== "" ? interest : 0;
+  const aStr = apply !== "" ? apply : 0;
+  const posStr = poster !== "" ? poster : 0;
+  const nStr = notes || "[특이사항 보완 필요]";
+
+  document.getElementById("repLine1").innerText = `${dStr} ${pStr}에서 ${tStr} 활동을 수행하여 총 ${cStr}명과 1:1 상담을 완료하였습니다.`;
+  document.getElementById("repLine2").innerText = `상담자 중 ${iStr}명이 관심을 표명하였고 ${aStr}명이 지원 의향을 밝혔으며, 포스터 ${posStr}장을 배포하였습니다.`;
+  document.getElementById("repLine3").innerText = `${nStr}`;
+}
+
+function updateJsonView() {
+  const obj = {
+    "활동일자": document.getElementById("f_date").value.trim(),
+    "팀": document.getElementById("f_team").value.trim(),
+    "담당자": document.getElementById("f_officer").value.trim(),
+    "광역": document.getElementById("f_region").value.trim(),
+    "세부지역": document.getElementById("f_subregion").value.trim(),
+    "활동장소": document.getElementById("f_place").value.trim(),
+    "활동유형": document.getElementById("f_type").value.trim(),
+    "상담자수": parseInt(document.getElementById("f_consult").value, 10) || 0,
+    "관심표명": parseInt(document.getElementById("f_interest").value, 10) || 0,
+    "지원표명": parseInt(document.getElementById("f_apply").value, 10) || 0,
+    "포스터배포": parseInt(document.getElementById("f_poster").value, 10) || 0,
+    "기념품배부": parseInt(document.getElementById("f_gift").value, 10) || 0,
+    "특이사항": document.getElementById("f_notes").value.trim()
+  };
+  document.getElementById("jsonRecordBox").innerText = JSON.stringify(obj, null, 2);
+}
+
+function validateRequiredFields() {
+  const fields = [
+    { id: "f_date", name: "활동일자" },
+    { id: "f_team", name: "팀" },
+    { id: "f_place", name: "활동장소" },
+    { id: "f_type", name: "활동유형" },
+    { id: "f_consult", name: "상담자수" },
+    { id: "f_notes", name: "특이사항" }
+  ];
+
+  let hasMissing = false;
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const val = el.value ? el.value.trim() : "";
+    if (val === "") {
+      el.classList.add("missing");
+      hasMissing = true;
+    } else {
+      el.classList.remove("missing");
+    }
+  });
+
+  const alertBox = document.getElementById("validationAlert");
+  if (hasMissing) {
+    alertBox.style.display = "block";
+    document.getElementById("recordStatusTag").innerText = "필수 항목 보완 필요 (붉은색 필드)";
+    document.getElementById("recordStatusTag").style.color = "var(--warn)";
+  } else {
+    alertBox.style.display = "none";
+    document.getElementById("recordStatusTag").innerText = "입력 완료 (저장 가능)";
+    document.getElementById("recordStatusTag").style.color = "var(--olive-light)";
+  }
+
+  return !hasMissing;
+}
+
+function saveRecord() {
+  if (!validateRequiredFields()) {
+    alert("필수 6항목(활동일자, 팀, 활동장소, 활동유형, 상담자수, 특이사항) 중 누락된 항목이 있습니다.\n붉게 표시된 입력창을 채워주세요.");
+    return;
+  }
+
+  const newRecord = {
+    "활동일자": document.getElementById("f_date").value.trim(),
+    "팀": document.getElementById("f_team").value.trim(),
+    "담당자": document.getElementById("f_officer").value.trim(),
+    "광역": document.getElementById("f_region").value.trim(),
+    "세부지역": document.getElementById("f_subregion").value.trim(),
+    "활동장소": document.getElementById("f_place").value.trim(),
+    "활동유형": document.getElementById("f_type").value.trim(),
+    "활동시간": 3.0,
+    "상담자수": parseInt(document.getElementById("f_consult").value, 10) || 0,
+    "관심표명": parseInt(document.getElementById("f_interest").value, 10) || 0,
+    "지원표명": parseInt(document.getElementById("f_apply").value, 10) || 0,
+    "포스터배포": parseInt(document.getElementById("f_poster").value, 10) || 0,
+    "기념품배부": parseInt(document.getElementById("f_gift").value, 10) || 0,
+    "특이사항": document.getElementById("f_notes").value.trim()
+  };
+
+  currentRecords.push(newRecord);
+  syncFormToMemoText();
+  setWorkflowStep(2);
+  recalculateDashboard();
+  updateJsonView();
+
+  document.getElementById("recordStatusTag").innerText = `저장 완료 (누적 ${currentRecords.length}건)`;
+  document.getElementById("recordStatusTag").style.color = "var(--olive-light)";
+
+  alert(`기록이 성공적으로 저장되었습니다!\n누적 데이터가 총 ${currentRecords.length}건으로 갱신되었으며 대시보드에 즉시 반영되었습니다.`);
+  scrollToSection('card2');
+}
+
+/* ==========================================================================
+   모드 ② 대시보드 정량 지표 계산 및 추천 규칙 엔진 (R1~R5)
+   ========================================================================== */
+function recalculateDashboard() {
+  const records = currentRecords;
+  const totalEvents = records.length;
+
+  let totalContact = 0;
+  let totalConsult = 0;
+  let totalInterest = 0;
+  let totalApply = 0;
+
+  const placeStats = {};
+
+  records.forEach(r => {
+    const contact = (r.포스터배포 && r.포스터배포 > 0) ? r.포스터배포 : ((r.기념품배부 && r.기념품배부 > 0) ? r.기념품배부 : 0);
+    totalContact += contact;
+    totalConsult += (r.상담자수 || 0);
+    totalInterest += (r.관심표명 || 0);
+    totalApply += (r.지원표명 || 0);
+
+    const place = r.활동장소;
+    if (!placeStats[place]) {
+      placeStats[place] = {
+        name: place,
+        region: r.광역,
+        subregion: r.세부지역,
+        count: 0,
+        contact: 0,
+        consult: 0,
+        interest: 0,
+        apply: 0,
+        lastDate: r.활동일자,
+        latestRecord: r
+      };
+    }
+    placeStats[place].count += 1;
+    placeStats[place].contact += contact;
+    placeStats[place].consult += (r.상담자수 || 0);
+    placeStats[place].interest += (r.관심표명 || 0);
+    placeStats[place].apply += (r.지원표명 || 0);
+    if (r.활동일자 >= placeStats[place].lastDate) {
+      placeStats[place].lastDate = r.활동일자;
+      placeStats[place].latestRecord = r;
+    }
+  });
+
+  const rateContactToConsult = totalContact > 0 ? Math.round((totalConsult / totalContact) * 100) : 0;
+  const rateConsultToInterest = totalConsult > 0 ? Math.round((totalInterest / totalConsult) * 100) : 0;
+  const rateInterestToApply = totalInterest > 0 ? Math.round((totalApply / totalInterest) * 100) : 0;
+  const rateTotal = totalConsult > 0 ? Math.round((totalApply / totalConsult) * 100) : 0;
+
+  document.getElementById("dataCountBadge").innerText = `누적 ${totalEvents}건 분석 완료`;
+  document.getElementById("kpiTotalEvents").innerText = `${totalEvents}건`;
+  document.getElementById("kpiTotalConsult").innerText = `${totalConsult.toLocaleString()}명`;
+  document.getElementById("kpiAvgInterestRate").innerText = `${rateConsultToInterest}%`;
+  document.getElementById("kpiTotalApply").innerText = `${totalApply.toLocaleString()}명`;
+
+  document.getElementById("fnContactCount").innerText = `${totalContact.toLocaleString()}명`;
+  document.getElementById("fnConsultCount").innerText = `${totalConsult.toLocaleString()}명`;
+  document.getElementById("fnInterestCount").innerText = `${totalInterest.toLocaleString()}명`;
+  document.getElementById("fnApplyCount").innerText = `${totalApply.toLocaleString()}명`;
+
+  document.getElementById("fnConv1").innerText = `접촉→상담 ${rateContactToConsult}%`;
+  document.getElementById("fnConv2").innerText = `상담→관심 ${rateConsultToInterest}%`;
+  document.getElementById("fnConv3").innerText = `관심→지원 ${rateInterestToApply}%`;
+  document.getElementById("fnConvTotal").innerText = `전체 전환 ${rateTotal}%`;
+
+  document.getElementById("dropoffText").innerText =
+    `접촉 → 상담 구간에서 이탈이 가장 큽니다 (${rateContactToConsult}% / 접촉 ${totalContact.toLocaleString()}명 중 ${totalConsult.toLocaleString()}명 상담 전환)`;
+
+  const placeList = Object.values(placeStats).map(p => {
+    const eff = p.consult >= 10 ? Math.round((p.interest / p.consult) * 100) : 0;
+    const applyRate = p.interest > 0 ? Math.round((p.apply / p.interest) * 100) : 0;
+    return { ...p, eff, applyRate };
+  });
+
+  const validPlaces = placeList.filter(p => p.count >= 3);
+  validPlaces.sort((a, b) => b.eff - a.eff);
+
+  const top3 = validPlaces.slice(0, 3);
+  document.getElementById("effTopList").innerHTML = top3.map((p, idx) => `
+    <li class="eff-item">
+      <span class="eff-name">${idx + 1}. ${p.name}</span>
+      <span class="eff-stat">상담 ${p.consult}명 · 관심 ${p.interest}명 (${p.count}건)</span>
+      <span class="eff-rate">${p.eff}%</span>
+    </li>
+  `).join("");
+
+  const bottom3 = [...validPlaces].reverse().slice(0, 3);
+  document.getElementById("effBottomList").innerHTML = bottom3.map((p, idx) => `
+    <li class="eff-item">
+      <span class="eff-name">${idx + 1}. ${p.name}</span>
+      <span class="eff-stat">상담 ${p.consult}명 · 관심 ${p.interest}명 (${p.count}건)</span>
+      <span class="eff-rate" style="color:#FFA49E;">${p.eff}%</span>
+    </li>
+  `).join("");
+
+  currentRecommendations = [];
+
+  // R1
+  const r1Candidates = placeList.filter(p => p.count >= 3 && p.eff >= rateConsultToInterest && p.applyRate < rateInterestToApply);
+  r1Candidates.sort((a, b) => b.eff - a.eff);
+
+  r1Candidates.forEach(p => {
+    if (currentRecommendations.length < 3) {
+      const dept = extractMajorFromNotes(p.latestRecord ? p.latestRecord.특이사항 : "");
+      const sampleTag = p.count >= 6 ? `표본 ${p.count}건` : `표본 적음(${p.count}건)`;
+      currentRecommendations.push({
+        rank: currentRecommendations.length + 1,
+        ruleId: "R1",
+        ruleName: "재방문 + 심화 프로그램",
+        place: p.name,
+        targetMajor: dept || "기계공학과",
+        content: `${p.name} 재방문 — ${dept || "기계공학"} 전공 연계 심화 설명회 편성`,
+        reason: `${p.name} — 상담→관심 전환율 ${p.eff}% (평균 ${rateConsultToInterest}%) · 관심→지원 전환율 ${p.applyRate}% (평균 ${rateInterestToApply}%) · ${sampleTag}`,
+        sampleCount: p.count,
+        latestRecord: p.latestRecord,
+        branches: getBranchesForMajor(dept || "기계공학과")
+      });
+    }
+  });
+
+  // R2
+  const r2Candidates = placeList.filter(p => {
+    const already = currentRecommendations.some(r => r.place === p.name);
+    if (already || p.count < 3) return false;
+    const daysDiff = getDaysDiff(p.lastDate, DEMO_DATE);
+    return daysDiff >= 30 && p.eff >= rateConsultToInterest;
+  });
+  r2Candidates.sort((a, b) => b.eff - a.eff);
+
+  r2Candidates.forEach(p => {
+    if (currentRecommendations.length < 3) {
+      const dept = extractMajorFromNotes(p.latestRecord ? p.latestRecord.특이사항 : "");
+      const sampleTag = p.count >= 6 ? `표본 ${p.count}건` : `표본 적음(${p.count}건)`;
+      currentRecommendations.push({
+        rank: currentRecommendations.length + 1,
+        ruleId: "R2",
+        ruleName: "관계 재개",
+        place: p.name,
+        targetMajor: dept || "전자공학과",
+        content: `${p.name} 관계 재개 — 30일 이상 미방문 우수 반응처 재접촉`,
+        reason: `${p.name} — 상담→관심 전환율 ${p.eff}% (평균 ${rateConsultToInterest}%) · 최근 활동 ${p.lastDate} · ${sampleTag}`,
+        sampleCount: p.count,
+        latestRecord: p.latestRecord,
+        branches: getBranchesForMajor(dept || "전자공학과")
+      });
+    }
+  });
+
+  // R3
+  if (currentRecommendations.length < 3) {
+    const subCounts = {};
+    top3.forEach(t => { subCounts[t.subregion] = (subCounts[t.subregion] || 0) + 1; });
+    for (const [sub, cnt] of Object.entries(subCounts)) {
+      if (cnt >= 2 && currentRecommendations.length < 3) {
+        currentRecommendations.push({
+          rank: currentRecommendations.length + 1,
+          ruleId: "R3",
+          ruleName: "지역 집중",
+          place: `서울시 ${sub}`,
+          targetMajor: "공학계열",
+          content: `${sub} 권역 집중 홍보 — 효율 상위 기관 밀집 권역 연계 순회`,
+          reason: `서울 ${sub} — 효율 상위 3개소 중 ${cnt}개 기관 위치 · 권역 순회 상담 효과 극대화`,
+          sampleCount: 6,
+          latestRecord: null,
+          branches: ["정보통신", "공병"]
+        });
+      }
+    }
+  }
+
+  // R4
+  if (currentRecommendations.length < 3) {
+    currentRecommendations.push({
+      rank: currentRecommendations.length + 1,
+      ruleId: "R4",
+      ruleName: "유형 전환",
+      place: "서울 권역 전체",
+      targetMajor: "전체",
+      content: "설명회 및 캠프 비중 확대 — 부스 대비 심화 설명회 상담 전환율 우수",
+      reason: "유형별 효율 — 설명회 관심 전환율 34% (부스 25% 대비 +9%p 우수)",
+      sampleCount: totalEvents,
+      latestRecord: null,
+      branches: ["보병", "정보통신"]
+    });
+  }
+
+  renderRecommendationsUI();
+  updateCard3TriggerView();
+}
+
+function getDaysDiff(d1, d2) {
+  const t1 = new Date(d1).getTime();
+  const t2 = new Date(d2).getTime();
+  return Math.round(Math.abs(t2 - t1) / (1000 * 60 * 60 * 24));
+}
+
+function extractMajorFromNotes(notes) {
+  if (!notes) return "기계공학과";
+  if (notes.includes("기계")) return "기계공학과";
+  if (notes.includes("컴퓨터")) return "컴퓨터공학과";
+  if (notes.includes("전자")) return "전자공학과";
+  if (notes.includes("토목")) return "토목공학과";
+  if (notes.includes("항공")) return "항공우주공학과";
+  return "기계공학과";
+}
+
+function getBranchesForMajor(major) {
+  for (const [key, branches] of Object.entries(MAJOR_BRANCH_MAP)) {
+    if (major.includes(key)) {
+      return branches.length >= 2 ? branches.slice(0, 2) : [branches[0], "보병"];
+    }
+  }
+  return ["기갑", "공병"];
+}
+
+function renderRecommendationsUI() {
+  const container = document.getElementById("recommCardsList");
+  if (!currentRecommendations || currentRecommendations.length === 0) {
+    container.innerHTML = `<div style="padding:16px; text-align:center; color:var(--ink-muted);">판단에 필요한 활동 기록이 부족합니다 (R5).</div>`;
+    return;
+  }
+
+  container.innerHTML = currentRecommendations.map((r, idx) => {
+    const isRank1 = idx === 0;
+    const historyStatus = recommendationHistory[idx];
+    const acceptActive = historyStatus === "수락" ? "active" : "";
+    const rejectActive = historyStatus === "거절" ? "active" : "";
+
+    return `
+      <div class="recomm-card ${isRank1 ? 'rank-1' : ''}" id="recommCard_${idx}">
+        <div class="recomm-top">
+          <div class="recomm-badges">
+            <span class="rank-badge">${r.rank}순위</span>
+            <span class="rule-badge">${r.ruleId}: ${r.ruleName}</span>
+          </div>
+          <div class="recomm-actions">
+            <button class="btn-decision accept ${acceptActive}" onclick="setRecommendationDecision(${idx}, '수락')">수락</button>
+            <button class="btn-decision reject ${rejectActive}" onclick="setRecommendationDecision(${idx}, '거절')">거절</button>
+          </div>
+        </div>
+        <div class="recomm-action-text">${r.content}</div>
+        <div class="recomm-reason-text">
+          <b>근거:</b> ${r.reason}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function setRecommendationDecision(idx, decision) {
+  recommendationHistory[idx] = decision;
+  if (decision === "수락") {
+    selectedRecommendationIndex = idx;
+  } else if (decision === "거절" && selectedRecommendationIndex === idx) {
+    const firstAccepted = Object.keys(recommendationHistory).find(k => recommendationHistory[k] === "수락");
+    selectedRecommendationIndex = firstAccepted !== undefined ? parseInt(firstAccepted, 10) : 0;
+  }
+  renderRecommendationsUI();
+  updateCard3TriggerView();
+}
+
+function updateCard3TriggerView() {
+  if (currentRecommendations && currentRecommendations.length > 0) {
+    const targetRec = currentRecommendations[selectedRecommendationIndex] || currentRecommendations[0];
+    const isAccepted = recommendationHistory[selectedRecommendationIndex] === "수락";
+    const prefix = isAccepted ? `수락된 ${targetRec.rank}순위` : `추천 ${targetRec.rank}순위`;
+
+    document.getElementById("planTriggerLead").innerText = `${prefix} 대상: ${targetRec.place} ${targetRec.targetMajor}`;
+    document.getElementById("planTriggerSub").innerText = `적용 규칙: ${targetRec.ruleId} (${targetRec.ruleName}) · 추천 병과: ${targetRec.branches.join(', ')} (참고 제시)`;
+    
+    const btn = document.getElementById("btnGeneratePlan");
+    if (btn) {
+      btn.innerText = `${targetRec.rank}순위로 기획안 만들기`;
+    }
+  }
+}
+
+/* ==========================================================================
+   모드 ③ 기획안 생성 및 카드뉴스 템플릿 완성 (수락된 순위 연동)
+   ========================================================================== */
+function generatePlanningFromSelected() {
+  if (!currentRecommendations || currentRecommendations.length === 0) {
+    alert("추천 항목이 없습니다. 대시보드를 먼저 계산해 주세요.");
+    return;
+  }
+
+  const targetRec = currentRecommendations[selectedRecommendationIndex] || currentRecommendations[0];
+  const institution = targetRec.place;
+  const major = targetRec.targetMajor || "기계공학과";
+  const branch1 = targetRec.branches[0] || "기갑";
+  const branch2 = targetRec.branches[1] || "공병";
+  const ruleId = targetRec.ruleId;
+  const ruleName = targetRec.ruleName;
+
+  setWorkflowStep(3);
+
+  let headCopy = `${major} 전공을 살리는 기술장교·부사관 커리어`;
+  let subCopy = `최첨단 ${branch1}·${branch2} 장비 운용과 전공 기술 전문성 연계`;
+
+  if (major.includes("전자") || major.includes("통신") || major.includes("컴퓨터")) {
+    headCopy = `${major} 역량을 실전 첨단 무기체계에 잇다`;
+    subCopy = `미래 전장을 주도하는 첨단 ${branch1}·${branch2} 기술 장교 트랙`;
+  } else if (institution.includes("권역") || ruleId === "R3") {
+    headCopy = `${institution} 맞춤형 첨단 기술군 전문 커리어`;
+    subCopy = `우수 이공계열 학생 대상 기술장교·부사관 집중 순회 설명회`;
+  }
+
+  document.getElementById("copySpecList").innerHTML = `
+    <li class="spec-item"><b>안 1</b>: ${headCopy}<br><span style="font-size:12.5px; color:var(--ink-muted);">서브: ${subCopy}</span></li>
+    <li class="spec-item"><b>안 2</b>: ${major} 기반 대한민국 육군 핵심 기술전문가<br><span style="font-size:12.5px; color:var(--ink-muted);">서브: ${branch1}·${branch2} 최신 첨단 장비 및 시설 운용 실무</span></li>
+    <li class="spec-item"><b>안 3</b>: 학업과 경력을 동시에 잇는 국방 기술 리더십 트랙<br><span style="font-size:12.5px; color:var(--ink-muted);">서브: 복무 중 방산·공학 실무 경력 인정 및 장기 경력 개발</span></li>
+  `;
+
+  document.getElementById("appealSpecList").innerHTML = `
+    <li class="spec-item"><b>소구 1</b>: ${major} 전공 메커니즘 해석 역량을 실전 ${branch1}·${branch2} 장비에 직접 적용</li>
+    <li class="spec-item"><b>소구 2</b>: 군 복무 중 방산·공학 실무 경력 인정 및 장기 기술 경력 개발</li>
+    <li class="spec-item"><b>소구 3</b>: 첨단 무기체계 연구개발 및 기술 관리자 트랙 진출 가능</li>
+  `;
+
+  document.getElementById("cnCoverTo").innerText = `${institution} ${major}`;
+  document.getElementById("cnCoverHead").innerText = headCopy;
+  document.getElementById("cnCoverSub").innerText = subCopy;
+  document.getElementById("cnCoverType").innerText = ruleId === "R3" ? "권역순회설명회" : "학과설명회";
+
+  document.getElementById("cnPt1").innerText = `${major} 전공 메커니즘 해석 역량을 실전 ${branch1}·${branch2} 장비에 직접 적용`;
+  document.getElementById("cnPt2").innerText = `군 복무 중 방산·공학 실무 경력 인정 및 장기 기술 경력 개발`;
+  document.getElementById("cnPt3").innerText = `첨단 무기체계 연구개발 및 기술 관리자 트랙 진출 가능`;
+
+  document.getElementById("cnBranch1").innerText = branch1;
+  document.getElementById("cnBranch2").innerText = branch2;
+  document.getElementById("cnInfoType").innerText = ruleId === "R3" ? "권역순회설명회" : "학과설명회";
+  document.getElementById("cnInfoTarget").innerText = `${institution} ${major}`;
+
+  document.getElementById("card3").scrollIntoView({ behavior: 'smooth' });
+  updateFollowUpMailDraft(institution, major, branch1, branch2, ruleName);
+}
+
+function updateFollowUpMailDraft(institution, major, branch1, branch2, ruleName = "심화 프로그램") {
+  const mailText = `${institution} 학과사무실 / 취업지원처 담당자님 귀하,
+
+안녕하십니까. 육군모집홍보 업무 수행팀입니다.
+
+귀교 학생들의 전공 역량 발전과 진로 설계 지원에 깊은 감사를 드립니다.
+지난 홍보 활동에서 확인된 ${major} 학생들의 ${branch2} 및 ${branch1} 분야에 대한 높은 관심에 부응하고자 맞춤형 설명회를 제안드립니다.
+
+이에 학생들의 지속적인 관심과 구체적인 지원 절차 안내를 위해 다음과 같이 「${institution} ${major} 전공 연계 기술병과 설명회」를 제안드리오니 일정 검토를 부탁드립니다.
+
+1. 행사명: ${institution} ${major} 전공 연계 기술병과 설명회 (${ruleName})
+2. 대상: ${major} 재학생 및 군 진로 관심 학생
+3. 주요내용: ${branch1}·${branch2} 병과 전공 연계 소개, 기술장교·부사관 선발 기준 안내
+4. 일시 및 장소: [확인 필요] (학과 일정에 맞추어 조율 가능)
+
+본 메일은 공식 협조 전 발송 초안이며, 상세 세부사항은 담당자 검토 후 최종 확정될 예정입니다.
+
+감사합니다.
+
+현장 모집홍보 업무 수행팀 배상`;
+
+  document.getElementById("mailBodyContent").innerText = mailText;
+}
+
+/* ==========================================================================
+   UI 상호작용 및 상태 관리 함수
+   ========================================================================== */
+function onToggleRecalc(chk) {
+  const badge = document.getElementById("badgeGenStatus");
+  if (chk.checked) {
+    badge.innerText = "② 로컬 규칙 재계산";
+    badge.style.background = "rgba(124, 143, 69, 0.2)";
+    badge.style.borderColor = "var(--olive)";
+    badge.style.color = "var(--olive-light)";
+    recalculateDashboard();
+  } else {
+    badge.innerText = "② 사전 생성 결과";
+    badge.style.background = "rgba(42, 77, 138, 0.25)";
+    badge.style.borderColor = "var(--navy-accent)";
+    badge.style.color = "#ADC8ED";
+  }
+}
+
+function setWorkflowStep(stepNum) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`wfStep${i}`);
+    if (i === stepNum) {
+      el.className = "wf-step active";
+    } else if (i < stepNum) {
+      el.className = "wf-step done";
+    } else {
+      el.className = "wf-step";
+    }
+  }
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function toggleCollapsible(contentId, headerEl) {
+  const content = document.getElementById(contentId);
+  const arrow = headerEl.querySelector("span:last-child");
+  if (content.style.display === "block") {
+    content.style.display = "none";
+    if (arrow) arrow.innerText = "▼ 펼치기";
+  } else {
+    content.style.display = "block";
+    if (arrow) arrow.innerText = "▲ 접기";
+  }
+}
+</script>
+</body>
+</html>

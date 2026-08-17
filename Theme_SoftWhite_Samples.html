@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>타이틀 색상 5종 & 베스트 조합 2종 비교기 — 육군 모집홍보 PR360 Lite</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    background: #0B0E14;
+    color: #C9D1D9;
+    padding: 24px 20px 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    width: 100%;
+    max-width: 1080px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* 상단 제어 바 */
+  .control-panel {
+    background: #141922;
+    border: 1px solid #2B3340;
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .control-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #F0F6FC;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .switch-btn {
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid #2B3340;
+    background: #1C2330;
+    color: #8B949E;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .switch-btn:hover { border-color: #8B949E; color: #C9D1D9; }
+  .switch-btn.active {
+    background: rgba(124, 143, 69, 0.2);
+    border-color: #7C8F45;
+    color: #F0F6FC;
+    box-shadow: 0 0 10px rgba(124, 143, 69, 0.3);
+  }
+
+  /* 타이틀 색상 5종 탭 */
+  .title-color-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .title-tab-btn {
+    padding: 10px 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid #2B3340;
+    background: #1C2330;
+    color: #8B949E;
+    text-align: center;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .title-tab-btn:hover { border-color: #8B949E; color: #C9D1D9; }
+  .title-tab-btn.active {
+    background: rgba(124, 143, 69, 0.2);
+    border-color: #7C8F45;
+    color: #F0F6FC;
+  }
+
+  .swatch-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.4);
+  }
+
+  .status-info-bar {
+    background: #0B0E14;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #8B949E;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ==================== 1페이지 샘플 뷰포트 ==================== */
+  :root {
+    --bg: #192120;
+    --card-bg: #232D2C;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-inner-bg: #1C2524;
+    --input-bg: #161E1D;
+    --input-border: #33413F;
+    --olive: #7C8F45;
+    --olive-light: #94A956;
+    --olive-dim: rgba(124, 143, 69, 0.18);
+    
+    /* 폰트 색상 */
+    --title-color: #D4C5A9; /* 샴페인 골드 (눈부심 제로) */
+    --ink: #E8E6E3;        /* 본문 (W2 소프트 아이보리) */
+    --ink-muted: #B0ADA6;  /* 보조 (W2 라벨) */
+    --ink-dim: #7A7873;
+    --warn: #D9534F;
+  }
+
+  .sample-viewport {
+    background-color: var(--bg);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 32px 28px;
+    transition: all 0.3s;
+  }
+
+  .app-frame {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* 상단 헤더 */
+  .top-header {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 22px 26px;
+  }
+  .header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .app-badge-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--olive); display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 16px;
+  }
+
+  .app-title-text {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--title-color) !important; /* 타이틀 전용색 적용 */
+    letter-spacing: -0.5px;
+    transition: color 0.2s;
+  }
+
+  .workflow-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;
+  }
+  .wf-step {
+    background: var(--card-inner-bg); border: 1px solid var(--card-border); border-radius: 8px;
+    padding: 12px 14px; text-align: center; font-size: 13.5px; font-weight: 700; color: var(--ink-muted);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .wf-step.active {
+    background: var(--olive-dim); color: var(--title-color); border-color: var(--olive);
+  }
+  .wf-num {
+    width: 20px; height: 20px; border-radius: 50%; background: var(--olive); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 11px;
+  }
+
+  .safety-bar {
+    background: var(--card-inner-bg); border: 1px solid var(--card-border); border-radius: 8px;
+    padding: 12px 16px; font-size: 13px; line-height: 1.6;
+  }
+  .safety-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .safety-tag {
+    background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border); border-radius: 20px;
+    padding: 4px 12px; font-size: 12.5px; font-weight: 600; color: var(--ink-muted);
+  }
+
+  /* 카드 1 */
+  .card-section {
+    background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px;
+    padding: 30px 30px 34px;
+  }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--card-border);
+  }
+  .section-tag {
+    background: var(--olive); color: #fff; font-size: 12.5px; font-weight: 800;
+    padding: 4px 12px; border-radius: 6px;
+  }
+
+  .section-title-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--title-color) !important; /* 타이틀 전용색 적용 */
+    transition: color 0.2s;
+  }
+
+  .heading-label {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--title-color) !important; /* 타이틀 전용색 적용 */
+    margin-bottom: 8px;
+    transition: color 0.2s;
+  }
+
+  .prompt-textarea {
+    width: 100%; min-height: 90px; padding: 14px 16px; border-radius: 8px;
+    border: 1px solid var(--input-border); background: var(--input-bg);
+    font-size: 15.5px; line-height: 1.6; color: var(--ink); resize: vertical; outline: none;
+  }
+  .btn-actions-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .btn {
+    padding: 11px 22px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; border: none;
+  }
+  .btn-primary { background: var(--olive); color: #fff; }
+  .btn-secondary { background: var(--card-inner-bg); color: var(--ink-muted); border: 1px solid var(--input-border); }
+
+  .form-subgroup {
+    background: var(--card-inner-bg); border: 1px solid var(--card-border); border-radius: 10px;
+    padding: 20px 22px; margin-top: 20px;
+  }
+  .subgroup-title { font-size: 14px; font-weight: 800; color: var(--olive-light); margin-bottom: 14px; }
+  .form-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 13.5px; font-weight: 600; color: var(--ink-muted); }
+  .form-control {
+    padding: 11px 13px; border-radius: 6px; border: 1px solid var(--input-border);
+    background: var(--input-bg); font-size: 15px; color: var(--ink); outline: none;
+  }
+
+  .report-box {
+    margin-top: 20px; background: var(--card-inner-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+
+  /* 추천 카드 */
+  .recomm-card {
+    background: var(--card-inner-bg); border: 1px solid var(--olive); border-radius: 10px;
+    padding: 18px 20px; margin-top: 14px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .recomm-title-text {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--title-color) !important; /* 타이틀 전용색 적용 */
+    transition: color 0.2s;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ==================== 상단 제어 바 ==================== -->
+  <div class="control-panel">
+    
+    <!-- 1. 베스트 기본 조합 선택 -->
+    <div class="control-row">
+      <div class="control-title">
+        <span>1️⃣ 선호 기본 조합 선택 (2종)</span>
+      </div>
+      <div class="btn-group">
+        <button class="switch-btn active" id="comboBtn_1" onclick="setBaseCombo(1)">
+          <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#192120;"></span>
+          <span>조합 ① 올리브 슬레이트 + W2 소프트 아이보리</span>
+        </button>
+        <button class="switch-btn" id="comboBtn_2" onclick="setBaseCombo(2)">
+          <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#182232;"></span>
+          <span>조합 ② 스틸 네이비 + W4 뮤트 펄그레이</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. 눈부시지 않은 대표 타이틀 색상 5종 -->
+    <div>
+      <div style="font-size:14px; font-weight:800; color:#F0F6FC; margin-bottom:10px;">
+        2️⃣ 하얀색을 대체할 눈이 편안한 대표 타이틀 색상 선택 (5종)
+      </div>
+      <div class="title-color-grid">
+        <button class="title-tab-btn active" onclick="setTitleColor('T1')">
+          <div class="swatch-circle" style="background:#DECDB3;"></div>
+          <span>T1 샴페인 골드</span>
+          <span style="font-size:11px; opacity:0.8;">#DECDB3 (금장 샌드)</span>
+        </button>
+
+        <button class="title-tab-btn" onclick="setTitleColor('T2')">
+          <div class="swatch-circle" style="background:#B8CC95;"></div>
+          <span>T2 세이지 올리브</span>
+          <span style="font-size:11px; opacity:0.8;">#B8CC95 (부드러운 국방)</span>
+        </button>
+
+        <button class="title-tab-btn" onclick="setTitleColor('T3')">
+          <div class="swatch-circle" style="background:#B4CEF0;"></div>
+          <span>T3 프로스트 블루</span>
+          <span style="font-size:11px; opacity:0.8;">#B4CEF0 (스틸 블루)</span>
+        </button>
+
+        <button class="title-tab-btn" onclick="setTitleColor('T4')">
+          <div class="swatch-circle" style="background:#DDD3B4;"></div>
+          <span>T4 앤틱 린넨</span>
+          <span style="font-size:11px; opacity:0.8;">#DDD3B4 (작전도 샌드)</span>
+        </button>
+
+        <button class="title-tab-btn" onclick="setTitleColor('T5')">
+          <div class="swatch-circle" style="background:#C5D1E3;"></div>
+          <span>T5 티타늄 실버</span>
+          <span style="font-size:11px; opacity:0.8;">#C5D1E3 (금속성 실버)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 상태 정보 -->
+    <div class="status-info-bar">
+      <span id="currentStatusText"><b>현재 설정</b>: 조합 ① (올리브 슬레이트 + W2) + T1 샴페인 골드 타이틀</span>
+      <span id="currentColorCodes" style="font-family:monospace; color:#7C8F45; font-weight:700;">--title-color: #DECDB3; --ink: #E8E6E3;</span>
+    </div>
+  </div>
+
+  <!-- ==================== 1페이지 샘플 뷰포트 ==================== -->
+  <div class="sample-viewport" id="sampleViewport">
+    <div class="app-frame">
+      
+      <!-- 상단 헤더 -->
+      <header class="top-header">
+        <div class="header-main">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div class="app-badge-icon">360</div>
+            <div>
+              <!-- [타이틀 색상 적용 1] -->
+              <h1 class="app-title-text">육군 모집홍보 PR360 Lite</h1>
+              <div style="font-size:13.5px; color:var(--ink-muted); margin-top:2px;">현장 기록 → 정량 분석·추천 → 기획안 생성 → 후속 연락 4단계 의사결정 체계</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-bar">
+          <div class="wf-step active"><span class="wf-num">1</span> [카드 1] ① 현장 기록</div>
+          <div class="wf-step"><span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;font-size:11px;">2</span> [카드 2] ② 분석 및 추천</div>
+          <div class="wf-step"><span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;font-size:11px;">3</span> [카드 3] ③ 기획안 작성</div>
+          <div class="wf-step"><span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);display:inline-flex;align-items:center;justify-content:center;font-size:11px;">4</span> [부속 ④] ④ 후속 메일 초안</div>
+        </div>
+
+        <div class="safety-bar">
+          <div style="font-size:13px; font-weight:700; color:var(--ink-muted);">안전 표시 6종 및 시연 상태 (시연규칙.md 준수)</div>
+          <div class="safety-grid">
+            <span class="safety-tag">① 합성 데이터</span>
+            <span class="safety-tag" style="border-color:#7C8F45; color:#94A956; background:rgba(124,143,69,0.18);">② 사전 생성 결과</span>
+            <span class="safety-tag">③ 출처: 2026 육군 모집안내 (2026-08-01)</span>
+            <span class="safety-tag">④ 추천 근거 지표·표본 수 필수 병기</span>
+            <span class="safety-tag">⑤ 초안 · 검토 후 사용</span>
+            <span class="safety-tag">⑥ 실제 발송 기능 없음</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- [카드 1] 현장 기록 샘플 -->
+      <section class="card-section">
+        <div class="section-header">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="section-tag">[카드 1] 모드 ①</span>
+            <!-- [타이틀 색상 적용 2] -->
+            <h2 class="section-title-text">현장 활동 기록 및 표준화</h2>
+          </div>
+        </div>
+
+        <div>
+          <!-- [타이틀 색상 적용 3] -->
+          <div class="heading-label">자연어 활동 메모</div>
+          <textarea class="prompt-textarea" readonly>2026-08-16 한빛대학교에서 부스 운영, 상담 23명, 관심 9명, 지원 의향 3명, 포스터 150장 배포. 기계공학과 심화설명회와 공병 문의가 많았음.</textarea>
+          
+          <div class="btn-actions-row">
+            <button class="btn btn-secondary">예시 불러오기 (한빛대)</button>
+            <button class="btn btn-secondary">보조 예시 (필수 누락 테스트)</button>
+            <button class="btn btn-secondary">자연어 파싱</button>
+            <button class="btn btn-primary">기록 저장 (대시보드 즉시 반영)</button>
+          </div>
+        </div>
+
+        <!-- 그룹 1: 기본 정보 -->
+        <div class="form-subgroup">
+          <div class="subgroup-title">1. 기본 정보</div>
+          <div class="form-grid-2col">
+            <div class="form-group">
+              <label>활동일자 *</label>
+              <input type="text" class="form-control" value="2026-08-16" readonly>
+            </div>
+            <div class="form-group">
+              <label>팀 *</label>
+              <input type="text" class="form-control" value="01. 서울모집홍보팀" readonly>
+            </div>
+            <div class="form-group">
+              <label>활동장소 *</label>
+              <input type="text" class="form-control" value="한빛대학교" readonly>
+            </div>
+            <div class="form-group">
+              <label>활동유형 *</label>
+              <input type="text" class="form-control" value="부스운영" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- 그룹 2: 실적 수치 -->
+        <div class="form-subgroup">
+          <div class="subgroup-title">2. 실적 수치</div>
+          <div class="form-grid-2col">
+            <div class="form-group">
+              <label>상담자수 *</label>
+              <input type="number" class="form-control" value="23" readonly>
+            </div>
+            <div class="form-group">
+              <label>관심표명</label>
+              <input type="number" class="form-control" value="9" readonly>
+            </div>
+            <div class="form-group">
+              <label>지원표명</label>
+              <input type="number" class="form-control" value="3" readonly>
+            </div>
+            <div class="form-group">
+              <label>포스터배포</label>
+              <input type="number" class="form-control" value="150" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- 결과보고 3문장 -->
+        <div class="report-box">
+          <!-- [타이틀 색상 적용 4] -->
+          <div class="heading-label">결과보고 3문장 (보고용 완결 문장)</div>
+          <div style="font-size:14.5px; color:var(--ink-muted); line-height:1.7;">• 2026-08-16 한빛대학교에서 부스운영 활동을 수행하여 총 23명과 1:1 상담을 완료하였습니다.</div>
+          <div style="font-size:14.5px; color:var(--ink-muted); line-height:1.7;">• 상담자 중 9명이 관심을 표명하였고 3명이 지원 의향을 밝혔으며, 포스터 150장을 배포하였습니다.</div>
+          <div style="font-size:14.5px; color:var(--ink-muted); line-height:1.7;">• 기계공학과 심화설명회와 공병 문의가 많았음.</div>
+        </div>
+
+        <!-- 추천 예시 카드 샘플 -->
+        <div class="recomm-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="background:var(--olive); color:#fff; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:800;">1순위 R1: 재방문 + 심화</span>
+            <span style="font-size:12px; color:var(--olive-light); font-weight:700;">추천안 샘플</span>
+          </div>
+          <!-- [타이틀 색상 적용 5] -->
+          <div class="recomm-title-text">한빛대학교 재방문 — 기계공학과 전공 연계 심화 설명회 편성</div>
+          <div style="font-size:13.5px; color:var(--ink-muted); background:var(--input-bg); padding:8px 12px; border-radius:6px; border-left:3px solid var(--olive);">
+            <b>근거:</b> 한빛대학교 — 상담→관심 전환율 41% (평균 28%) · 관심→지원 전환율 27% (평균 35%) · 표본 6건
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// 선호 기본 조합 2종 프리셋
+const BASE_COMBOS = {
+  1: {
+    name: "조합 ① 올리브 슬레이트 + W2 소프트 아이보리",
+    bg: "#192120",
+    cardBg: "#232D2C",
+    cardInnerBg: "#1C2524",
+    inputBg: "#161E1D",
+    inputBorder: "#33413F",
+    ink: "#E8E6E3",
+    inkMuted: "#B0ADA6"
+  },
+  2: {
+    name: "조합 ② 스틸 네이비 + W4 뮤트 펄그레이",
+    bg: "#182232",
+    cardBg: "#222F44",
+    cardInnerBg: "#1A2536",
+    inputBg: "#16202E",
+    inputBorder: "#30415C",
+    ink: "#DCDFE4",
+    inkMuted: "#9CA3AF"
+  }
+};
+
+// 하얀색을 대체할 대표 타이틀 색상 5종 프리셋
+const TITLE_COLORS = {
+  T1: {
+    name: "T1 샴페인 골드",
+    color: "#DECDB3",
+    desc: "금장 휘장 느낌의 고급스러운 샴페인 샌드 골드로 눈부심 제로"
+  },
+  T2: {
+    name: "T2 세이지 올리브",
+    color: "#B8CC95",
+    desc: "국방 올리브 톤을 부드럽게 정제한 세이지 그린으로 배경과 완벽 일체"
+  },
+  T3: {
+    name: "T3 프로스트 스틸블루",
+    color: "#B4CEF0",
+    desc: "지휘통제실 스크린 느낌의 차분하고 지적인 스틸 블루"
+  },
+  T4: {
+    name: "T4 앤틱 린넨",
+    color: "#DDD3B4",
+    desc: "작전 지도/문서 표지 느낌의 따뜻하고 묵직한 린넨 샌드 톤"
+  },
+  T5: {
+    name: "T5 티타늄 실버",
+    color: "#C5D1E3",
+    desc: "백색광을 뺀 금속성의 은은한 티타늄 슬레이트 실버"
+  }
+};
+
+let currentBaseCombo = 1;
+let currentTitleKey = "T1";
+
+function updateTheme() {
+  const base = BASE_COMBOS[currentBaseCombo];
+  const title = TITLE_COLORS[currentTitleKey];
+  const root = document.documentElement;
+
+  root.style.setProperty('--bg', base.bg);
+  root.style.setProperty('--card-bg', base.cardBg);
+  root.style.setProperty('--card-inner-bg', base.cardInnerBg);
+  root.style.setProperty('--input-bg', base.inputBg);
+  root.style.setProperty('--input-border', base.inputBorder);
+  root.style.setProperty('--ink', base.ink);
+  root.style.setProperty('--ink-muted', base.inkMuted);
+
+  root.style.setProperty('--title-color', title.color);
+
+  document.getElementById('sampleViewport').style.backgroundColor = base.bg;
+  document.getElementById('currentStatusText').innerHTML = `<b>현재 설정</b>: ${base.name} + <span style="color:${title.color}; font-weight:800;">${title.name} (${title.color})</span>`;
+  document.getElementById('currentColorCodes').innerText = `--title-color: ${title.color}; --ink: ${base.ink};`;
+}
+
+function setBaseCombo(num) {
+  currentBaseCombo = num;
+  document.getElementById('comboBtn_1').classList.toggle('active', num === 1);
+  document.getElementById('comboBtn_2').classList.toggle('active', num === 2);
+  updateTheme();
+}
+
+function setTitleColor(key) {
+  currentTitleKey = key;
+  const btns = document.querySelectorAll('.title-tab-btn');
+  const keys = ['T1', 'T2', 'T3', 'T4', 'T5'];
+  btns.forEach((b, idx) => {
+    b.classList.toggle('active', keys[idx] === key);
+  });
+  updateTheme();
+}
+
+window.onload = function() {
+  updateTheme();
+};
+</script>
+</body>
+</html>
